@@ -1,0 +1,66 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment & secrets
+.env
+.env.*
+*/.env
+*/.env.*
+
+# Logs
+*.log
+logs/
+
+# Build output
+bin/
+obj/
+out/
+dist/
+publish/
+Debug/
+Release/
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.DotSettings.user
+
+# NuGet
+*.nupkg
+packages/
+.nuget/
+
+# Avalonia / .NET generated
+**/wwwroot/
+**/App.*.css
+
+# Database artifacts
+*.mdf
+*.ldf
+*.ndf
+*.bak
+*.bacpac
+*.db
+*.sqlite
+*.sql~
+
+# Rider caches
+.idea/
+
+# Others
+_ReSharper*/
+*.[Cc]ache
+*.tlog
+
+# Ignore compiled JSON config copies
+GameLibraryManager/GameLibraryManager/bin/
+GameLibraryManager/GameLibraryManager/obj/
+
+

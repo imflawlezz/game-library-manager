@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="https://github.com/projektanker/icons.avalonia"
+             x:Class="GameLibraryManager.Controls.AsyncImage">
+    
+    <Grid>
+        
+        <Image x:Name="ImageControl"
+               Stretch="UniformToFill"
+               Opacity="0">
+            <Image.Transitions>
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.3" Easing="CubicEaseOut"/>
+                </Transitions>
+            </Image.Transitions>
+        </Image>
+        
+        
+        <Border x:Name="LoadingPlaceholder"
+                Background="#21262D"
+                Opacity="1">
+            <Border.Transitions>
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.2" Easing="CubicEaseIn"/>
+                </Transitions>
+            </Border.Transitions>
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                
+                <Border Width="32" Height="32"
+                        Background="{StaticResource BackgroundElevatedBrush}"
+                        CornerRadius="6">
+                    <i:Icon Value="fa-solid fa-image"
+                            FontSize="16"
+                            Foreground="{StaticResource TextMutedBrush}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"/>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

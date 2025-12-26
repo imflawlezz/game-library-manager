@@ -1,0 +1,153 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GameLibraryManager.ViewModels"
+             xmlns:models="using:GameLibraryManager.Models"
+             xmlns:controls="using:GameLibraryManager.Controls"
+             xmlns:i="https://github.com/projektanker/icons.avalonia"
+             x:Class="GameLibraryManager.Controls.GameCard"
+             x:DataType="models:UserGame"
+             xmlns:converters="using:GameLibraryManager.Converters">
+    
+    <UserControl.Styles>
+        <Style Selector="Border.CardContainer">
+            <Setter Property="RenderTransform" Value="scale(1)"/>
+            <Setter Property="BoxShadow" Value="0 4 8 0 #20000000"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+                    <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.CardContainer:pointerover">
+            <Setter Property="RenderTransform" Value="scale(1.02)"/>
+            <Setter Property="BoxShadow" Value="0 8 24 0 #33000000"/>
+            <Setter Property="ZIndex" Value="10"/>
+        </Style>
+        
+        <Style Selector="Border.ImageShadowOverlay">
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.CardContainer:pointerover Border.ImageShadowOverlay">
+            <Setter Property="Opacity" Value="1"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Border Classes="CardContainer"
+            Background="{StaticResource BackgroundMediumBrush}" 
+            CornerRadius="12" 
+            Padding="0"
+            Margin="6"
+            BorderBrush="{StaticResource BorderDefaultBrush}"
+            BorderThickness="1"
+            ClipToBounds="True"
+            Cursor="Hand"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+        
+        <Button Command="{Binding Command, RelativeSource={RelativeSource AncestorType=controls:GameCard}}"
+                CommandParameter="{Binding CommandParameter, RelativeSource={RelativeSource AncestorType=controls:GameCard}}"
+                Background="Transparent"
+                BorderThickness="0"
+                Padding="0"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch">
+            <StackPanel>
+                <Panel>
+                    <controls:AsyncImage Source="{Binding CoverImage, RelativeSource={RelativeSource AncestorType=controls:GameCard}}" Height="280" />
+                    
+                    <Border IsHitTestVisible="False">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0%,70%" EndPoint="0%,100%">
+                                <GradientStop Color="#00000000" Offset="0"/>
+                                <GradientStop Color="#80161B22" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                    </Border>
+                    
+                    <Border Classes="ImageShadowOverlay" IsHitTestVisible="False">
+                        <Border.Background>
+                            <RadialGradientBrush Center="50%,50%" GradientOrigin="50%,50%" Radius="1.0">
+                                <GradientStop Color="#00000000" Offset="0.4"/>
+                                <GradientStop Color="#E6000000" Offset="1"/>
+                            </RadialGradientBrush>
+                        </Border.Background>
+                    </Border>
+                    
+                    <Border Background="{StaticResource AccentPrimaryBrush}"
+                            CornerRadius="4"
+                            Padding="8,4"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Margin="10"
+                            IsHitTestVisible="False"
+                            BoxShadow="0 2 4 0 #40000000"
+                            IsVisible="{Binding BadgeText, RelativeSource={RelativeSource AncestorType=controls:GameCard}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Text="{Binding BadgeText, RelativeSource={RelativeSource AncestorType=controls:GameCard}}"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Foreground="{StaticResource BackgroundDarkBrush}"/>
+                    </Border>
+                    
+                    <ContentPresenter Content="{Binding ActionContent, RelativeSource={RelativeSource AncestorType=controls:GameCard}}"
+                                      HorizontalAlignment="Right"
+                                      VerticalAlignment="Top"
+                                      Margin="10"/>
+                </Panel>
+                
+                <StackPanel Margin="14,12" Spacing="6">
+                    <TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=controls:GameCard}}" 
+                               FontSize="15"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               TextTrimming="CharacterEllipsis"
+                               MaxLines="1"/>
+                    
+                    <TextBlock Text="{Binding Developer, RelativeSource={RelativeSource AncestorType=controls:GameCard}}"
+                               FontSize="13"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               TextTrimming="CharacterEllipsis"
+                               MaxLines="1"
+                               IsVisible="{Binding Developer, RelativeSource={RelativeSource AncestorType=controls:GameCard}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                    
+                    <TextBlock Text="{Binding Genres, RelativeSource={RelativeSource AncestorType=controls:GameCard}}"
+                               FontSize="11"
+                               Foreground="{StaticResource TextMutedBrush}"
+                               TextTrimming="CharacterEllipsis"
+                               MaxLines="1"
+                               IsVisible="{Binding Genres, RelativeSource={RelativeSource AncestorType=controls:GameCard}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+                    <StackPanel Orientation="Horizontal" Spacing="12"
+                                IsVisible="{Binding ShowLibraryStats, RelativeSource={RelativeSource AncestorType=controls:GameCard}}">
+
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <i:Icon Value="fa-solid fa-star" 
+                                    FontSize="12"
+                                    Foreground="{StaticResource AccentWarning}"/>
+                            <TextBlock Text="{Binding Rating, RelativeSource={RelativeSource AncestorType=controls:GameCard}, StringFormat={}{0:F1}, TargetNullValue='-'}"
+                                       FontSize="13"
+                                       Foreground="{StaticResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                        
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <i:Icon Value="fa-solid fa-clock" 
+                                    FontSize="12"
+                                    Foreground="{StaticResource TextSecondaryBrush}"/>
+                            <TextBlock Text="{Binding Hours, RelativeSource={RelativeSource AncestorType=controls:GameCard}, StringFormat={}{0:F0}h, TargetNullValue='0h'}"
+                                       FontSize="13"
+                                       Foreground="{StaticResource TextSecondaryBrush}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Button>
+    </Border>
+</UserControl>
+

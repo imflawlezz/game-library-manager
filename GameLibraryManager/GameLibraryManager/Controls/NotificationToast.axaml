@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:conv="using:GameLibraryManager.Converters"
+             xmlns:services="using:GameLibraryManager.Services"
+             x:Class="GameLibraryManager.Controls.NotificationToast"
+             x:DataType="services:NotificationService">
+    
+    <ContentControl Content="{Binding CurrentNotification}"
+                    VerticalAlignment="Bottom"
+                    HorizontalAlignment="Center">
+        <ContentControl.ContentTemplate>
+            <DataTemplate x:DataType="services:NotificationMessage">
+                <Border Margin="0,0,0,40"
+                        Padding="16,12"
+                        CornerRadius="8"
+                        MinWidth="300"
+                        MaxWidth="500"
+                        ZIndex="1000"
+                        BoxShadow="0 8 24 0 #80000000">
+                    <Border.Styles>
+                        <Style Selector="Border">
+                            <Setter Property="Transitions">
+                                <Transitions>
+                                    <DoubleTransition Property="Opacity" Duration="0:0:0.3"/>
+                                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.3" Easing="CubicEaseOut"/>
+                                </Transitions>
+                            </Setter>
+                        </Style>
+                    </Border.Styles>
+                    <Border.Background>
+                        <Binding Path="Type" 
+                                 Converter="{x:Static conv:NotificationConverters.TypeToBackground}"/>
+                    </Border.Background>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <i:Icon Grid.Column="0"
+                                FontSize="18" 
+                                Foreground="White" 
+                                VerticalAlignment="Top" 
+                                Margin="0,2,12,0">
+                            <i:Icon.Value>
+                                <Binding Path="Type" 
+                                         Converter="{x:Static conv:NotificationConverters.TypeToIcon}"/>
+                            </i:Icon.Value>
+                        </i:Icon>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding Message}"
+                                   Foreground="White"
+                                   FontSize="14"
+                                   FontWeight="Medium"
+                                   TextWrapping="Wrap"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+            </DataTemplate>
+        </ContentControl.ContentTemplate>
+    </ContentControl>
+</UserControl>
+

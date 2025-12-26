@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <MacOSInfoPlist>Info.plist</MacOSInfoPlist>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,5 +25,9 @@
 
   <ItemGroup>
     <TrimmerRootDescriptor Include="Roots.xml" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="icon.icns" />
   </ItemGroup>
 </Project>

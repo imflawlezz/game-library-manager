@@ -1,0 +1,388 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="using:GameLibraryManager.Converters"
+             x:Class="GameLibraryManager.App"
+             RequestedThemeVariant="Dark">
+    <Application.Resources>
+        <converters:ImageUrlConverter x:Key="ImageUrlConverter"/>
+        <converters:ShouldShowCopyConverter x:Key="ShouldShowCopyConverter"/>
+        
+        <FontFamily x:Key="AppFont">Inter, Segoe UI Variable, Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, sans-serif</FontFamily>
+        
+        <Color x:Key="BackgroundDark">#0D1117</Color>
+        <Color x:Key="BackgroundMedium">#161B22</Color>
+        <Color x:Key="BackgroundLight">#21262D</Color>
+        <Color x:Key="BackgroundElevated">#30363D</Color>
+        <Color x:Key="AccentPrimary">#58A6FF</Color>
+        <Color x:Key="AccentSecondary">#238636</Color>
+        <Color x:Key="AccentDanger">#F85149</Color>
+        <Color x:Key="AccentPurple">#A371F7</Color>
+        <Color x:Key="AccentWarning">#D29922</Color>
+        
+        <Color x:Key="AccentSecondaryHover">#2EA043</Color>
+        
+        <Color x:Key="TextPrimary">#F0F6FC</Color>
+        <Color x:Key="TextSecondary">#8B949E</Color>
+        <Color x:Key="TextMuted">#6E7681</Color>
+        
+        <Color x:Key="BorderDefault">#30363D</Color>
+        <Color x:Key="BorderMuted">#21262D</Color>
+        
+        <SolidColorBrush x:Key="BackgroundDarkBrush" Color="#0D1117"/>
+        <SolidColorBrush x:Key="BackgroundMediumBrush" Color="#161B22"/>
+        <SolidColorBrush x:Key="BackgroundLightBrush" Color="#21262D"/>
+        <SolidColorBrush x:Key="BackgroundElevatedBrush" Color="#30363D"/>
+        <SolidColorBrush x:Key="AccentPrimaryBrush" Color="#58A6FF"/>
+        <SolidColorBrush x:Key="AccentSecondaryBrush" Color="#238636"/>
+        <SolidColorBrush x:Key="AccentDangerBrush" Color="#F85149"/>
+        <SolidColorBrush x:Key="AccentPurpleBrush" Color="#A371F7"/>
+        
+        <SolidColorBrush x:Key="TextPrimaryBrush" Color="#F0F6FC"/>
+        <SolidColorBrush x:Key="TextSecondaryBrush" Color="#8B949E"/>
+        <SolidColorBrush x:Key="TextMutedBrush" Color="#6E7681"/>
+        
+        <SolidColorBrush x:Key="BorderDefaultBrush" Color="#30363D"/>
+        
+        <SolidColorBrush x:Key="AccentPrimaryHover" Color="#79B8FF"/>
+        <SolidColorBrush x:Key="AccentDangerHover" Color="#FF6B61"/>
+
+        <LinearGradientBrush x:Key="SidebarGradient" StartPoint="0%,0%" EndPoint="0%,100%">
+            <GradientStop Color="#161B22" Offset="0"/>
+            <GradientStop Color="#0D1117" Offset="1"/>
+        </LinearGradientBrush>
+        
+        <LinearGradientBrush x:Key="AccentGradient" StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="#58A6FF" Offset="0"/>
+            <GradientStop Color="#A371F7" Offset="1"/>
+        </LinearGradientBrush>
+        
+        <LinearGradientBrush x:Key="CardGradient" StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="#21262D" Offset="0"/>
+            <GradientStop Color="#161B22" Offset="1"/>
+        </LinearGradientBrush>
+    </Application.Resources>
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+        
+        <!-- Default Button Style -->
+        <Style Selector="Button">
+            <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderDefaultBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        
+        <Style Selector="Button:pointerover">
+            <Setter Property="Background" Value="{StaticResource BackgroundElevatedBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentPrimaryBrush}"/>
+        </Style>
+        
+        <Style Selector="Button:pressed">
+            <Setter Property="Background" Value="{StaticResource BackgroundElevatedBrush}"/>
+        </Style>
+        
+        <Style Selector="Button:disabled">
+            <Setter Property="Opacity" Value="0.5"/>
+            <Setter Property="Cursor" Value="Arrow"/>
+        </Style>
+        
+        <!-- TextBox Styles -->
+        <Style Selector="TextBox">
+            <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderDefaultBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        
+        <Style Selector="TextBox:focus">
+            <Setter Property="BorderBrush" Value="{StaticResource AccentPrimaryBrush}"/>
+        </Style>
+        
+        <Style Selector="TextBox:error">
+            <Setter Property="BorderBrush" Value="{StaticResource AccentDangerBrush}"/>
+        </Style>
+        
+        <!-- Button: Primary -->
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="{StaticResource AccentPrimaryBrush}"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        
+        <Style Selector="Button.primary:pointerover">
+            <Setter Property="Background" Value="{StaticResource AccentPrimaryHover}"/>
+        </Style>
+        
+        <Style Selector="Button.primary:pressed">
+            <Setter Property="Background" Value="#3D8FE5"/>
+        </Style>
+        
+        <Style Selector="Button.primary:disabled">
+            <Setter Property="Opacity" Value="0.5"/>
+            <Setter Property="Cursor" Value="Arrow"/>
+        </Style>
+        
+        <!-- Button: Accent (Gradient) -->
+        <Style Selector="Button.accent">
+            <Setter Property="Background" Value="{StaticResource AccentGradient}"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        
+        <Style Selector="Button.accent:pointerover">
+            <Setter Property="Opacity" Value="0.9"/>
+        </Style>
+        
+        <Style Selector="Button.accent:pressed">
+            <Setter Property="Opacity" Value="0.8"/>
+        </Style>
+        
+        <Style Selector="Button.accent:disabled">
+            <Setter Property="Opacity" Value="0.5"/>
+            <Setter Property="Cursor" Value="Arrow"/>
+        </Style>
+        
+        <!-- Button: Danger -->
+        <Style Selector="Button.danger">
+            <Setter Property="Background" Value="{StaticResource AccentDangerBrush}"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        
+        <Style Selector="Button.danger:pointerover">
+            <Setter Property="Background" Value="{StaticResource AccentDangerHover}"/>
+        </Style>
+        
+        <Style Selector="Button.danger:pressed">
+            <Setter Property="Background" Value="#E6392F"/>
+        </Style>
+        
+        <Style Selector="Button.danger:disabled">
+            <Setter Property="Opacity" Value="0.5"/>
+            <Setter Property="Cursor" Value="Arrow"/>
+        </Style>
+        
+        <!-- Button: Ghost -->
+        <Style Selector="Button.ghost">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        
+        <Style Selector="Button.ghost:pointerover">
+            <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
+        </Style>
+        
+        <Style Selector="Button.ghost:pressed">
+            <Setter Property="Background" Value="{StaticResource BackgroundElevatedBrush}"/>
+        </Style>
+        
+        <Style Selector="Button.ghost:disabled">
+            <Setter Property="Opacity" Value="0.5"/>
+            <Setter Property="Cursor" Value="Arrow"/>
+        </Style>
+        
+        <!-- Button: Icon -->
+        <Style Selector="Button.icon">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Width" Value="36"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        
+        <Style Selector="Button.icon:pointerover">
+            <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
+        </Style>
+        
+        <Style Selector="Button.icon:pressed">
+            <Setter Property="Background" Value="{StaticResource BackgroundElevatedBrush}"/>
+        </Style>
+        
+        <!-- Button: Sidebar -->
+        <Style Selector="Button.sidebar">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        
+        <Style Selector="Button.sidebar:pointerover">
+            <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        </Style>
+        
+        <Style Selector="Button.sidebar.active">
+            <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        
+        <Style Selector="Button.sidebar.active:pointerover">
+            <Setter Property="Background" Value="{StaticResource BackgroundElevatedBrush}"/>
+        </Style>
+        
+        <!-- Border: CardContainer -->
+        <Style Selector="Border.CardContainer">
+            <Setter Property="RenderTransform" Value="scale(1)"/>
+            <Setter Property="BoxShadow" Value="0 4 8 0 #20000000"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+                    <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        
+        <Style Selector="Border.CardContainer:pointerover">
+            <Setter Property="RenderTransform" Value="scale(1.02)"/>
+            <Setter Property="BoxShadow" Value="0 8 24 0 #33000000"/>
+            <Setter Property="ZIndex" Value="10"/>
+        </Style>
+        
+        <!-- Border: ImageShadowOverlay -->
+        <Style Selector="Border.ImageShadowOverlay">
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        
+        <Style Selector="Border.CardContainer:pointerover Border.ImageShadowOverlay">
+            <Setter Property="Opacity" Value="1"/>
+        </Style>
+        
+        <!-- Icon: Spin Animation - Note: Animation handled inline in views due to Avalonia animation limitations -->
+        
+        <!-- ScrollBar Styles -->
+        <Style Selector="ScrollBar">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Width" Value="12"/>
+            <Setter Property="Height" Value="12"/>
+        </Style>
+        
+        <Style Selector="ScrollBar:horizontal">
+            <Setter Property="Height" Value="12"/>
+        </Style>
+        
+        <Style Selector="ScrollBar:vertical">
+            <Setter Property="Width" Value="12"/>
+        </Style>
+        
+        <Style Selector="ScrollBar Thumb">
+            <Setter Property="Background" Value="{StaticResource BackgroundElevatedBrush}"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="MinWidth" Value="8"/>
+            <Setter Property="MinHeight" Value="8"/>
+        </Style>
+        
+        <Style Selector="ScrollBar Thumb:pointerover">
+            <Setter Property="Background" Value="{StaticResource BorderDefaultBrush}"/>
+        </Style>
+        
+        <Style Selector="ScrollBar Thumb:pressed">
+            <Setter Property="Background" Value="{StaticResource AccentPrimaryBrush}"/>
+        </Style>
+        
+        <!-- ComboBox Styles -->
+        <Style Selector="ComboBox">
+            <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderDefaultBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="12,10"/>
+        </Style>
+        
+        <Style Selector="ComboBox:focus">
+            <Setter Property="BorderBrush" Value="{StaticResource AccentPrimaryBrush}"/>
+        </Style>
+        
+        <!-- ListBox Styles -->
+        <Style Selector="ListBox">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        
+        <Style Selector="ListBoxItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="8"/>
+        </Style>
+        
+        <Style Selector="ListBoxItem:pointerover">
+            <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
+        </Style>
+        
+        <Style Selector="ListBoxItem:selected">
+            <Setter Property="Background" Value="{StaticResource AccentPrimaryBrush}"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+        
+        <!-- CheckBox Styles -->
+        <Style Selector="CheckBox">
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        </Style>
+        
+        <Style Selector="CheckBox:checked /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource AccentPrimaryBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentPrimaryBrush}"/>
+        </Style>
+        
+        <!-- ProgressBar Styles -->
+        <Style Selector="ProgressBar">
+            <Setter Property="Background" Value="{StaticResource BackgroundElevatedBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource AccentPrimaryBrush}"/>
+            <Setter Property="Height" Value="6"/>
+            <Setter Property="CornerRadius" Value="3"/>
+        </Style>
+        
+        <!-- Slider Styles -->
+        <Style Selector="Slider">
+            <Setter Property="Background" Value="{StaticResource BackgroundElevatedBrush}"/>
+        </Style>
+        
+        <Style Selector="Slider Thumb">
+            <Setter Property="Width" Value="20"/>
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="Background" Value="{StaticResource AccentPrimaryBrush}"/>
+        </Style>
+    </Application.Styles>
+</Application>

@@ -1,0 +1,397 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:GameLibraryManager.ViewModels"
+        xmlns:conv="using:GameLibraryManager.Converters"
+        xmlns:controls="using:GameLibraryManager.Controls"
+        xmlns:i="https://github.com/projektanker/icons.avalonia"
+        x:Class="GameLibraryManager.Views.AddEditGameDialog"
+        x:DataType="vm:AddEditGameDialogViewModel"
+        Title="{Binding DialogTitle}"
+        Width="600"
+        Height="800"
+        MinWidth="400"
+        MinHeight="600"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True"
+        Background="#0D1117">
+    
+    <Grid RowDefinitions="Auto,*,Auto">
+        
+        
+        <Border Grid.Row="0"
+                Background="#161B22"
+                Padding="24,20"
+                BorderBrush="#30363D"
+                BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <Border Width="40" Height="40"
+                        CornerRadius="10"
+                        Background="#21262D">
+                    <i:Icon Value="fa-solid fa-gamepad" 
+                            FontSize="18"
+                            Foreground="#58A6FF"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="{Binding DialogTitle}"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Foreground="#F0F6FC"/>
+                    <TextBlock Text="Fill in the game details below"
+                               FontSize="13"
+                               Foreground="#8B949E"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        
+        
+        <ScrollViewer Grid.Row="1" 
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="24" Margin="32,24,40,24">
+                
+                
+                <Border Background="#161B22"
+                        CornerRadius="12"
+                        Padding="24"
+                        BorderBrush="#30363D"
+                        BorderThickness="1"
+                        HorizontalAlignment="Center"
+                        MaxWidth="340">
+                    <StackPanel Spacing="16" HorizontalAlignment="Center">
+                        <TextBlock Text="Preview"
+                                   FontSize="13"
+                                   FontWeight="Medium"
+                                   Foreground="#8B949E"
+                                   HorizontalAlignment="Center"/>
+                        
+                        <Border CornerRadius="8"
+                                ClipToBounds="True"
+                                Width="180"
+                                Height="240"
+                                Background="#0D1117"
+                                BoxShadow="0 4 12 0 #40000000">
+                            <Panel>
+                                <controls:AsyncImage Source="{Binding CoverImageURL}"/>
+                                <i:Icon Value="fa-solid fa-image"
+                                        FontSize="32"
+                                        Foreground="#30363D"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        IsVisible="{Binding CoverImageURL, Converter={x:Static StringConverters.IsNullOrEmpty}}"/>
+                            </Panel>
+                        </Border>
+
+                        <StackPanel Spacing="6" HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding Title, FallbackValue=Game Title}"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="#F0F6FC"
+                                       TextWrapping="Wrap"
+                                       TextAlignment="Center"
+                                       MaxWidth="280"/>
+                            
+                            
+                            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding Developer}"
+                                           FontSize="12"
+                                           Foreground="#8B949E"
+                                           IsVisible="{Binding Developer, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                <TextBlock Text=" • "
+                                           FontSize="12"
+                                           Foreground="#484F58"
+                                           IsVisible="{Binding Publisher, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                <TextBlock Text="{Binding Publisher}"
+                                           FontSize="12"
+                                           Foreground="#8B949E"
+                                           IsVisible="{Binding Publisher, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                <TextBlock Text=" • "
+                                           FontSize="12"
+                                           Foreground="#484F58"
+                                           IsVisible="{Binding ReleaseYearText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                <TextBlock Text="{Binding ReleaseYearText}"
+                                           FontSize="12"
+                                           Foreground="#8B949E"
+                                           IsVisible="{Binding ReleaseYearText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                            </WrapPanel>
+                        </StackPanel>
+
+                        
+                        <StackPanel HorizontalAlignment="Center">
+                            <ItemsControl ItemsSource="{Binding Genres}" HorizontalAlignment="Center">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#58A6FF"
+                                                CornerRadius="4"
+                                                Padding="6,2"
+                                                Margin="2"
+                                                IsVisible="{Binding IsSelected}">
+                                            <TextBlock Text="{Binding GenreName}"
+                                                       FontSize="9"
+                                                       FontWeight="Medium"
+                                                       Foreground="#0D1117"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <ItemsControl ItemsSource="{Binding Platforms}" HorizontalAlignment="Center">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#21262D"
+                                                CornerRadius="4"
+                                                Padding="6,2"
+                                                Margin="2"
+                                                IsVisible="{Binding IsSelected}">
+                                            <TextBlock Text="{Binding PlatformName}"
+                                                       FontSize="9"
+                                                       Foreground="#8B949E"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+
+                        
+                        <TextBlock Text="{Binding Description}"
+                                   FontSize="11"
+                                   Foreground="#8B949E"
+                                   TextWrapping="Wrap"
+                                   TextAlignment="Center"
+                                   MaxLines="3"
+                                   TextTrimming="CharacterEllipsis"
+                                   IsVisible="{Binding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                   MaxWidth="280"
+                                   Opacity="0.7"/>
+                    </StackPanel>
+                </Border>
+                
+                
+                <StackPanel Spacing="20">
+                    
+                    
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Title *"
+                                   FontSize="13"
+                                   FontWeight="Medium"
+                                   Foreground="#8B949E"/>
+                        <TextBox Text="{Binding Title}"
+                                 Watermark="Game title"/>
+                    </StackPanel>
+                    
+                    
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Developer"
+                                   FontSize="13"
+                                   FontWeight="Medium"
+                                   Foreground="#8B949E"/>
+                        <TextBox Text="{Binding Developer}"
+                                 Watermark="Developer name"/>
+                    </StackPanel>
+                    
+                    
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Publisher"
+                                   FontSize="13"
+                                   FontWeight="Medium"
+                                   Foreground="#8B949E"/>
+                        <TextBox Text="{Binding Publisher}"
+                                 Watermark="Publisher name"/>
+                    </StackPanel>
+                    
+                    
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Release Year"
+                                   FontSize="13"
+                                   FontWeight="Medium"
+                                   Foreground="#8B949E"/>
+                        <TextBox Text="{Binding ReleaseYearText}"
+                                 Watermark="2024"/>
+                    </StackPanel>
+                    
+                    
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Cover Image URL"
+                                   FontSize="13"
+                                   FontWeight="Medium"
+                                   Foreground="#8B949E"/>
+                        <TextBox Text="{Binding CoverImageURL}"
+                                 Watermark="https://example.com/cover.jpg"/>
+                    </StackPanel>
+                    
+                    
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Description"
+                                   FontSize="13"
+                                   FontWeight="Medium"
+                                   Foreground="#8B949E"/>
+                        <TextBox Text="{Binding Description}"
+                                 Watermark="Game description..."
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 MinHeight="80"/>
+                    </StackPanel>
+                    
+                    
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Genres"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Foreground="#F0F6FC"/>
+                        <ItemsControl ItemsSource="{Binding Genres}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Command="{Binding $parent[ItemsControl].((vm:AddEditGameDialogViewModel)DataContext).ToggleGenreCommand}"
+                                            CommandParameter="{Binding}"
+                                            Margin="0,0,8,8"
+                                            Padding="12,8"
+                                            CornerRadius="6"
+                                            BorderThickness="1"
+                                            Cursor="Hand">
+                                        <Button.Styles>
+                                            <Style Selector="Button">
+                                                <Setter Property="Background" Value="#21262D"/>
+                                                <Setter Property="BorderBrush" Value="#30363D"/>
+                                                <Setter Property="Foreground" Value="#8B949E"/>
+                                            </Style>
+                                            <Style Selector="Button:pointerover">
+                                                <Setter Property="Background" Value="#30363D"/>
+                                            </Style>
+                                        </Button.Styles>
+                                        <Panel>
+                                            
+                                            <TextBlock Text="{Binding GenreName}"
+                                                       FontSize="13"
+                                                       IsVisible="{Binding !IsSelected}"/>
+                                            
+                                            <StackPanel Orientation="Horizontal" 
+                                                        Spacing="6"
+                                                        IsVisible="{Binding IsSelected}">
+                                                <i:Icon Value="fa-solid fa-check" 
+                                                        FontSize="12"
+                                                        Foreground="#58A6FF"/>
+                                                <TextBlock Text="{Binding GenreName}"
+                                                           FontSize="13"
+                                                           Foreground="#58A6FF"
+                                                           FontWeight="Medium"/>
+                                            </StackPanel>
+                                        </Panel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                    
+                    
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Platforms"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Foreground="#F0F6FC"/>
+                        <ItemsControl ItemsSource="{Binding Platforms}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Command="{Binding $parent[ItemsControl].((vm:AddEditGameDialogViewModel)DataContext).TogglePlatformCommand}"
+                                            CommandParameter="{Binding}"
+                                            Margin="0,0,8,8"
+                                            Padding="12,8"
+                                            CornerRadius="6"
+                                            BorderThickness="1"
+                                            Cursor="Hand">
+                                        <Button.Styles>
+                                            <Style Selector="Button">
+                                                <Setter Property="Background" Value="#21262D"/>
+                                                <Setter Property="BorderBrush" Value="#30363D"/>
+                                                <Setter Property="Foreground" Value="#8B949E"/>
+                                            </Style>
+                                            <Style Selector="Button:pointerover">
+                                                <Setter Property="Background" Value="#30363D"/>
+                                            </Style>
+                                        </Button.Styles>
+                                        <Panel>
+                                            
+                                            <TextBlock Text="{Binding PlatformName}"
+                                                       FontSize="13"
+                                                       IsVisible="{Binding !IsSelected}"/>
+                                            
+                                            <StackPanel Orientation="Horizontal" 
+                                                        Spacing="6"
+                                                        IsVisible="{Binding IsSelected}">
+                                                <i:Icon Value="fa-solid fa-check" 
+                                                        FontSize="12"
+                                                        Foreground="#238636"/>
+                                                <TextBlock Text="{Binding PlatformName}"
+                                                           FontSize="13"
+                                                           Foreground="#238636"
+                                                           FontWeight="Medium"/>
+                                            </StackPanel>
+                                        </Panel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                    
+                </StackPanel>
+                
+            </StackPanel>
+        </ScrollViewer>
+        
+        
+        <Border Grid.Row="2"
+                Background="#161B22"
+                Padding="24,16"
+                BorderBrush="#30363D"
+                BorderThickness="0,1,0,0">
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                
+                
+                <Button Grid.Column="1"
+                        Command="{Binding CancelCommand}"
+                        Content="Cancel"
+                        Margin="0,0,12,0"
+                        MinWidth="100"
+                        Height="40"
+                        IsEnabled="{Binding !IsLoading}"/>
+                <Button Grid.Column="2"
+                        Command="{Binding SaveCommand}"
+                        Classes="primary"
+                        MinWidth="140"
+                        Height="40"
+                        IsEnabled="{Binding !IsLoading}">
+                    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                        <i:Icon Value="fa-solid fa-check" FontSize="14" IsVisible="{Binding !IsLoading}"/>
+                        <ProgressBar IsIndeterminate="True" 
+                                     Width="16" Height="16"
+                                     IsVisible="{Binding IsLoading}"/>
+                        <TextBlock Text="{Binding SaveButtonText}" 
+                                   FontWeight="Medium"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+        <controls:NotificationToast Grid.RowSpan="3"/>
+    </Grid>
+</Window>

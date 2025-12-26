@@ -1,0 +1,153 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GameLibraryManager.ViewModels"
+             xmlns:controls="using:GameLibraryManager.Controls"
+             xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:spinner="using:GameLibraryManager.Controls"
+             x:Class="GameLibraryManager.Views.LibraryView"
+             x:DataType="vm:LibraryViewModel"
+             x:Name="Root">
+    
+    <Grid RowDefinitions="Auto,*">
+        
+        <Border Grid.Row="0" 
+                Background="#161B22"
+                CornerRadius="12"
+                Padding="20"
+                Margin="0,0,0,20"
+                BorderBrush="#30363D"
+                BorderThickness="1">
+            <Grid ColumnDefinitions="*,Auto,*,Auto,*,Auto,*,Auto,*">
+                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding Statistics.TotalGames, FallbackValue=0}"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="#F0F6FC"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Total Games"
+                               FontSize="12"
+                               Foreground="#8B949E"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+                
+                <Border Grid.Column="1" Width="1" Background="#30363D" Margin="8,4"/>
+                
+                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding Statistics.PlayingCount, FallbackValue=0}"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="#58A6FF"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Playing"
+                               FontSize="12"
+                               Foreground="#8B949E"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+                
+                <Border Grid.Column="3" Width="1" Background="#30363D" Margin="8,4"/>
+                
+                <StackPanel Grid.Column="4" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding Statistics.CompletedCount, FallbackValue=0}"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="#238636"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Completed"
+                               FontSize="12"
+                               Foreground="#8B949E"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+                
+                <Border Grid.Column="5" Width="1" Background="#30363D" Margin="8,4"/>
+                
+                <StackPanel Grid.Column="6" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding Statistics.BacklogCount, FallbackValue=0}"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="#D29922"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Backlog"
+                               FontSize="12"
+                               Foreground="#8B949E"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+                
+                <Border Grid.Column="7" Width="1" Background="#30363D" Margin="8,4"/>
+                
+                <StackPanel Grid.Column="8" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding Statistics.TotalHoursPlayed, StringFormat={}{0:F0}, FallbackValue=0}"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="#A371F7"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Hours Played"
+                               FontSize="12"
+                               Foreground="#8B949E"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+        
+        <Grid Grid.Row="1">
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled"
+                          IsVisible="{Binding !IsLoading}">
+                <ItemsControl ItemsSource="{Binding FilteredGames}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="{Binding #Root.GameColumns}" 
+                                         HorizontalAlignment="Stretch"
+                                         VerticalAlignment="Top"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <controls:GameCard Command="{Binding $parent[ItemsControl].DataContext.OpenGameDetailsCommand}"
+                                               CommandParameter="{Binding}"
+                                               HorizontalAlignment="Stretch"
+                                               Margin="8"
+                                               Title="{Binding Title}"
+                                               CoverImage="{Binding CoverImageURL}"
+                                               BadgeText="{Binding Status}"
+                                               Rating="{Binding PersonalRating}"
+                                               Hours="{Binding HoursPlayed}"
+                                               Developer="{Binding Developer}"
+                                               Genres="{Binding GenresString}"
+                                               Platforms="{Binding Platforms}"
+                                               ShowLibraryStats="True"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="16">
+                <StackPanel.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                        <Binding Path="!IsLoading"/>
+                        <Binding Path="!FilteredGames.Count"/>
+                    </MultiBinding>
+                </StackPanel.IsVisible>
+                <i:Icon Value="fa-solid fa-book"
+                        FontSize="48"
+                        Foreground="#6E7681"/>
+                <TextBlock Text="No games in your library"
+                           FontSize="18"
+                           Foreground="#8B949E"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="Browse the catalog to add games"
+                           FontSize="14"
+                           Foreground="#6E7681"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+            
+            <Border Background="#E0161B22"
+                    IsVisible="{Binding IsLoading}">
+                <spinner:LoadingSpinner Text="Loading your library"/>
+            </Border>
+        </Grid>
+
+
+    </Grid>
+</UserControl>

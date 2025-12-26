@@ -1,0 +1,393 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:GameLibraryManager.ViewModels"
+        xmlns:views="using:GameLibraryManager.Views"
+        xmlns:controls="using:GameLibraryManager.Controls"
+        xmlns:conv="using:GameLibraryManager.Converters"
+        xmlns:i="https://github.com/projektanker/icons.avalonia"
+        x:Class="GameLibraryManager.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{Binding WindowTitle}"
+        Width="1400" Height="900"
+        MinWidth="1100" MinHeight="700"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BackgroundDarkBrush}"
+        FontFamily="{StaticResource AppFont}">
+    
+    <Grid ColumnDefinitions="260,*">
+        
+        
+        
+        
+        <Border Grid.Column="0"
+                Background="{StaticResource BackgroundMediumBrush}"
+                BorderBrush="{StaticResource BorderDefaultBrush}"
+                BorderThickness="0,0,1,0">
+            <Grid RowDefinitions="Auto,*,Auto">
+                
+                
+                <Border Grid.Row="0" 
+                        Padding="20,20,20,16"
+                        BorderBrush="{StaticResource BorderDefaultBrush}"
+                        BorderThickness="0,0,0,1">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <Border Width="42" Height="42"
+                                CornerRadius="12"
+                                BoxShadow="0 4 12 0 #4058A6FF">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                    <GradientStop Color="{StaticResource AccentPrimary}" Offset="0"/>
+                                    <GradientStop Color="{StaticResource AccentPurple}" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <i:Icon Value="fa-solid fa-gamepad" 
+                                    FontSize="20"
+                                    Foreground="{StaticResource TextPrimaryBrush}"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock VerticalAlignment="Center" FontSize="18" FontWeight="Bold">
+                            <Run Text="GL" Foreground="{StaticResource AccentPrimaryBrush}"/>
+                            <Run Text="Manager" Foreground="{StaticResource TextPrimaryBrush}"/>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+                
+                
+                <ScrollViewer Grid.Row="1" 
+                              VerticalScrollBarVisibility="Auto"
+                              Padding="8,16">
+                    <StackPanel Spacing="4">
+                        
+                        <TextBlock Text="MAIN"
+                                   FontSize="11"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource TextMuted}"
+                                   Margin="12,0,0,8"/>
+                        
+                        <Button Command="{Binding NavigateToLibraryCommand}"
+                                Classes="sidebar"
+                                Classes.active="{Binding IsLibraryActive}"
+                                HorizontalAlignment="Stretch">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <i:Icon Value="fa-solid fa-book" FontSize="16" Width="20"/>
+                                <TextBlock Text="My Library" VerticalAlignment="Center" FontWeight="Medium"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <Button Command="{Binding NavigateToAllGamesCommand}"
+                                Classes="sidebar"
+                                Classes.active="{Binding IsCatalogActive}"
+                                HorizontalAlignment="Stretch">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <i:Icon Value="fa-solid fa-store" FontSize="16" Width="20"/>
+                                <TextBlock Text="Browse Catalog" VerticalAlignment="Center" FontWeight="Medium"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        
+                        <StackPanel IsVisible="{Binding IsAdmin}" Margin="0,20,0,0">
+                            <TextBlock Text="ADMINISTRATION"
+                                       FontSize="11"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource TextMuted}"
+                                       Margin="12,0,0,8"/>
+                            
+                            <Button Command="{Binding NavigateToUserManagementCommand}"
+                                    Classes="sidebar"
+                                    Classes.active="{Binding IsUserManagementActive}"
+                                    HorizontalAlignment="Stretch">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <i:Icon Value="fa-solid fa-users" FontSize="16" Width="20"/>
+                                    <TextBlock Text="User Management" VerticalAlignment="Center" FontWeight="Medium"/>
+                                </StackPanel>
+                            </Button>
+                            
+                            <Button Command="{Binding NavigateToGameManagementCommand}"
+                                    Classes="sidebar"
+                                    Classes.active="{Binding IsGameManagementActive}"
+                                    HorizontalAlignment="Stretch">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <i:Icon Value="fa-solid fa-gamepad" FontSize="16" Width="20"/>
+                                    <TextBlock Text="Game Management" VerticalAlignment="Center" FontWeight="Medium"/>
+                                </StackPanel>
+                            </Button>
+                            
+                            <Button Command="{Binding NavigateToLogCommand}"
+                                    Classes="sidebar"
+                                    Classes.active="{Binding IsLogActive}"
+                                    HorizontalAlignment="Stretch">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <i:Icon Value="fa-solid fa-file-lines" FontSize="16" Width="20"/>
+                                    <TextBlock Text="Audit Log" VerticalAlignment="Center" FontWeight="Medium"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+                
+                
+                <Border Grid.Row="2"
+                        Padding="12,14"
+                        BorderBrush="{StaticResource BorderDefaultBrush}"
+                        BorderThickness="0,1,0,0"
+                        Background="{StaticResource BackgroundDarkBrush}">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                        
+                        <Panel Grid.Column="0" 
+                               Width="44" Height="44"
+                               Margin="0,0,12,0">
+                            <Ellipse Width="44" Height="44"
+                                     Fill="{StaticResource BackgroundLightBrush}"
+                                     Stroke="{StaticResource BorderDefaultBrush}"
+                                     StrokeThickness="2"/>
+                            
+                            <Ellipse Width="44" Height="44"
+                                     IsVisible="{Binding CurrentUser.ProfileImageURL, Converter={x:Static StringConverters.IsNullOrEmpty}}">
+                                <Ellipse.Fill>
+                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                        <GradientStop Color="{StaticResource AccentPrimary}" Offset="0"/>
+                                        <GradientStop Color="{StaticResource AccentPurple}" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Ellipse.Fill>
+                            </Ellipse>
+                            <i:Icon Value="fa-solid fa-user" 
+                                    FontSize="18"
+                                    Foreground="#FFFFFF"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    IsVisible="{Binding CurrentUser.ProfileImageURL, Converter={x:Static StringConverters.IsNullOrEmpty}}"/>
+                            
+                            <Ellipse Width="44" Height="44"
+                                     IsVisible="{Binding CurrentUser.ProfileImageURL, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                <Ellipse.Fill>
+                                    <ImageBrush Source="{Binding CurrentUser.ProfileImageURL, Converter={StaticResource ImageUrlConverter}}"
+                                                Stretch="UniformToFill"/>
+                                </Ellipse.Fill>
+                            </Ellipse>
+                        </Panel>
+                        
+                        
+                        <StackPanel Grid.Column="1" 
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,8,0"
+                                    Spacing="2">
+                            <TextBlock Text="{Binding CurrentUser.Username}"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       TextTrimming="CharacterEllipsis"
+                                       MaxWidth="100"/>
+                            <TextBlock Text="{Binding CurrentUser.Email}"
+                                       FontSize="11"
+                                       Foreground="{StaticResource TextMuted}"
+                                       TextTrimming="CharacterEllipsis"
+                                       MaxWidth="100"/>
+                        </StackPanel>
+                        
+                        
+                        <Button Grid.Column="2"
+                                Command="{Binding OpenProfileSettingsCommand}"
+                                Classes="icon"
+                                ToolTip.Tip="Edit Profile"
+                                Margin="0,0,4,0">
+                            <i:Icon Value="fa-solid fa-gear" 
+                                    FontSize="16"
+                                    Foreground="{StaticResource TextMuted}"/>
+                        </Button>
+                        
+                        
+                        <Button Grid.Column="3"
+                                Command="{Binding LogoutCommand}"
+                                Classes="icon"
+                                ToolTip.Tip="Log Out">
+                            <i:Icon Value="fa-solid fa-right-from-bracket" 
+                                    FontSize="16"
+                                    Foreground="{StaticResource AccentDangerBrush}"/>
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+        
+        
+        
+        
+        <Grid Grid.Column="1" RowDefinitions="Auto,*">
+            
+            
+            <Border Grid.Row="0"
+                    Background="{StaticResource BackgroundMediumBrush}"
+                    BorderBrush="{StaticResource BorderDefaultBrush}"
+                    BorderThickness="0,0,0,1"
+                    Padding="24,16"
+                    Height="72">
+                <Grid ColumnDefinitions="*,*,*">
+                    
+                    <StackPanel Grid.Column="0" 
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Spacing="2">
+                        <TextBlock Text="{Binding CurrentTitle}"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"/>
+                        <TextBlock Text="{Binding CurrentSubtitle}"
+                                   FontSize="13"
+                                   Foreground="{StaticResource TextMuted}"
+                                   IsVisible="{Binding CurrentSubtitle, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                    </StackPanel>
+                    
+                    
+                    <Border Grid.Column="1" 
+                            HorizontalAlignment="Center"
+                            MaxWidth="400"
+                            IsVisible="{Binding ShowSearch}">
+                        <TextBox Watermark="{Binding SearchWatermark}"
+                                 Text="{Binding SearchText}"
+                                 Width="350">
+                            <TextBox.InnerLeftContent>
+                                <i:Icon Value="fa-solid fa-magnifying-glass" 
+                                        FontSize="14"
+                                        Foreground="{StaticResource TextMuted}"
+                                        Margin="8,0,0,0"/>
+                            </TextBox.InnerLeftContent>
+                            <TextBox.InnerRightContent>
+                                <Button Command="{Binding ClearSearchCommand}"
+                                        Classes="icon"
+                                        IsVisible="{Binding SearchText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                        ToolTip.Tip="Clear search"
+                                        Margin="0,0,4,0"
+                                        Padding="4">
+                                    <i:Icon Value="fa-solid fa-xmark" 
+                                            FontSize="12"
+                                            Foreground="{StaticResource TextMuted}"/>
+                                </Button>
+                            </TextBox.InnerRightContent>
+                        </TextBox>
+                    </Border>
+                    
+                    
+                    <StackPanel Grid.Column="2" 
+                                Orientation="Horizontal" 
+                                Spacing="8"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                        
+                        <Button Command="{Binding NavigateToAllGamesCommand}"
+                                IsVisible="{Binding ShowBrowseCatalog}"
+                                Classes="ghost">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <i:Icon Value="fa-solid fa-store" FontSize="14"/>
+                                <TextBlock Text="Browse Catalog" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <Button Command="{Binding AddGameCommand}"
+                                IsVisible="{Binding ShowAddGame}"
+                                Classes="primary">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <i:Icon Value="fa-solid fa-plus" FontSize="14"/>
+                                <TextBlock Text="Add Game" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <Button Command="{Binding AddUserCommand}"
+                                IsVisible="{Binding ShowAddUser}"
+                                Classes="primary">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <i:Icon Value="fa-solid fa-user-plus" FontSize="14"/>
+                                <TextBlock Text="Add User" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        
+                        <Button Command="{Binding AddToLibraryFromDetailsCommand}"
+                                Classes="primary">
+                            <Button.IsVisible>
+                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                    <Binding Path="ShowGameDetailsActions"/>
+                                    <Binding Path="!IsInLibrary"/>
+                                </MultiBinding>
+                            </Button.IsVisible>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <i:Icon Value="fa-solid fa-plus" FontSize="14"/>
+                                <TextBlock Text="Add to Library" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <Button Command="{Binding SaveGameDetailsCommand}"
+                                Classes="primary">
+                            <Button.IsVisible>
+                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                    <Binding Path="ShowGameDetailsActions"/>
+                                    <Binding Path="IsInLibrary"/>
+                                </MultiBinding>
+                            </Button.IsVisible>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <i:Icon Value="fa-solid fa-floppy-disk" FontSize="14"/>
+                                <TextBlock Text="Save" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <Button Command="{Binding RemoveFromLibraryCommand}"
+                                Classes="danger">
+                            <Button.IsVisible>
+                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                    <Binding Path="ShowGameDetailsActions"/>
+                                    <Binding Path="IsInLibrary"/>
+                                </MultiBinding>
+                            </Button.IsVisible>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <i:Icon Value="fa-solid fa-trash" FontSize="14"/>
+                                <TextBlock Text="Remove" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <Button Command="{Binding RefreshCommand}"
+                                Classes="icon"
+                                ToolTip.Tip="Refresh">
+                            <i:Icon Value="fa-solid fa-rotate-right" 
+                                    FontSize="16"
+                                    Foreground="{StaticResource TextMuted}"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            
+            
+            <Border Grid.Row="1" 
+                    Background="{StaticResource BackgroundDarkBrush}"
+                    Padding="24">
+                <ContentControl Content="{Binding CurrentViewModel}">
+                    <ContentControl.DataTemplates>
+                        <DataTemplate DataType="vm:LibraryViewModel">
+                            <views:LibraryView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="vm:AdminPanelViewModel">
+                            <views:AdminPanelView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="vm:UserManagementViewModel">
+                            <views:UserManagementView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="vm:GameManagementViewModel">
+                            <views:GameManagementView/>
+                        </DataTemplate>
+
+                        <DataTemplate DataType="vm:GameDetailsViewModel">
+                            <views:GameDetailsView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="vm:UserProfileViewModel">
+                            <views:UserProfileView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="vm:LogViewModel">
+                            <views:LogView/>
+                        </DataTemplate>
+                    </ContentControl.DataTemplates>
+                </ContentControl>
+            </Border>
+        </Grid>
+
+        <controls:NotificationToast Grid.ColumnSpan="2"/>
+    </Grid>
+</Window>

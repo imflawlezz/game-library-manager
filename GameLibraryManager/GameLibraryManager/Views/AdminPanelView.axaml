@@ -1,0 +1,91 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GameLibraryManager.ViewModels"
+             xmlns:controls="using:GameLibraryManager.Controls"
+             xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:spinner="using:GameLibraryManager.Controls"
+             x:Class="GameLibraryManager.Views.AdminPanelView"
+             x:DataType="vm:AdminPanelViewModel"
+             x:Name="Root">
+    
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      IsVisible="{Binding !IsLoading}">
+            <ItemsControl ItemsSource="{Binding FilteredGames}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="{Binding #Root.GameColumns}" 
+                                     HorizontalAlignment="Stretch"
+                                     VerticalAlignment="Top"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <controls:GameCard Command="{Binding $parent[ItemsControl].DataContext.ViewGameCommand}"
+                                           CommandParameter="{Binding}"
+                                           HorizontalAlignment="Stretch"
+                                           Margin="8"
+                                           Title="{Binding Title}"
+                                           CoverImage="{Binding CoverImageURL}"
+                                           BadgeText="{Binding ReleaseYear}"
+                                           Height="NaN"
+                                           Developer="{Binding Developer}"
+                                           Genres="{Binding GenresString}"
+                                           Platforms="{Binding Game.Platforms}"> 
+                            
+                            <controls:GameCard.ActionContent>
+                                <Panel>
+                                    <Button Classes="icon"
+                                            Command="{Binding $parent[ItemsControl].DataContext.AddToLibraryCommand}"
+                                            CommandParameter="{Binding}"
+                                            Background="#58A6FF"
+                                            ToolTip.Tip="Add to Library"
+                                            IsVisible="{Binding !IsInLibrary}">
+                                        <i:Icon Value="fa-solid fa-plus" FontSize="14" Foreground="#FFFFFF"/>
+                                    </Button>
+                                    
+                                    <Border Background="#238636"
+                                            CornerRadius="6"
+                                            Padding="8"
+                                            ToolTip.Tip="In Library"
+                                            IsVisible="{Binding IsInLibrary}">
+                                        <i:Icon Value="fa-solid fa-check" FontSize="14" Foreground="#FFFFFF"/>
+                                    </Border>
+                                </Panel>
+                            </controls:GameCard.ActionContent>
+                        </controls:GameCard>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        
+        <StackPanel HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="16">
+            <StackPanel.IsVisible>
+                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                    <Binding Path="!IsLoading"/>
+                    <Binding Path="!FilteredGames.Count"/>
+                </MultiBinding>
+            </StackPanel.IsVisible>
+            <i:Icon Value="fa-solid fa-gamepad"
+                    FontSize="48"
+                    Foreground="#6E7681"/>
+            <TextBlock Text="No games found"
+                       FontSize="18"
+                       Foreground="#8B949E"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="Try adjusting your search or add new games"
+                       FontSize="14"
+                       Foreground="#6E7681"
+                       HorizontalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Loading Overlay -->
+        <Border Background="#E0161B22"
+                IsVisible="{Binding IsLoading}">
+            <spinner:LoadingSpinner Text="Loading catalog"/>
+        </Border>
+    </Grid>
+</UserControl>

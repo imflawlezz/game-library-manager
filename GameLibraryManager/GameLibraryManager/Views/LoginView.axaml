@@ -1,0 +1,198 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:GameLibraryManager.ViewModels"
+        xmlns:controls="using:GameLibraryManager.Controls"
+        xmlns:conv="using:GameLibraryManager.Converters"
+        xmlns:i="https://github.com/projektanker/icons.avalonia"
+        x:Class="GameLibraryManager.Views.LoginView"
+        x:DataType="vm:LoginViewModel"
+        Title="GLManager"
+        Width="480" Height="640"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BackgroundDarkBrush}"
+        CanResize="False"
+        FontFamily="{StaticResource AppFont}">
+    
+    <Grid>
+        
+        <Border Opacity="0.3">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Color="{StaticResource AccentPrimary}" Offset="0"/>
+                    <GradientStop Color="{StaticResource BackgroundDark}" Offset="0.5"/>
+                    <GradientStop Color="{StaticResource AccentPurple}" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+        </Border>
+        
+        
+        <Border Background="{StaticResource BackgroundMediumBrush}" 
+                CornerRadius="16" 
+                Padding="40"
+                MaxWidth="400"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                BorderBrush="{StaticResource BorderDefaultBrush}"
+                BorderThickness="1"
+                BoxShadow="0 24 48 0 #40000000">
+            <StackPanel Spacing="24">
+                
+                
+                <StackPanel Spacing="16" HorizontalAlignment="Center">
+                    <Border Width="72" Height="72"
+                            CornerRadius="18"
+                            HorizontalAlignment="Center"
+                            BoxShadow="0 8 24 0 #4058A6FF">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                <GradientStop Color="{StaticResource AccentPrimary}" Offset="0"/>
+                                <GradientStop Color="{StaticResource AccentPurple}" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <i:Icon Value="fa-solid fa-gamepad" 
+                                FontSize="32"
+                                Foreground="{StaticResource TextPrimaryBrush}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                    </Border>
+                    
+                    <TextBlock HorizontalAlignment="Center" FontSize="32" FontWeight="Bold">
+                        <Run Text="GL" Foreground="{StaticResource AccentPrimaryBrush}"/>
+                        <Run Text="Manager" Foreground="{StaticResource TextPrimaryBrush}"/>
+                    </TextBlock>
+                    
+                    <Panel>
+                        <TextBlock Text="Sign in to continue"
+                                   FontSize="14"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   HorizontalAlignment="Center"
+                                   IsVisible="{Binding !IsRegisterMode}"/>
+                        <TextBlock Text="Create your account"
+                                   FontSize="14"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   HorizontalAlignment="Center"
+                                   IsVisible="{Binding IsRegisterMode}"/>
+                    </Panel>
+                </StackPanel>
+                
+                <StackPanel Spacing="16">
+                    
+                    <StackPanel Spacing="8" IsVisible="{Binding IsRegisterMode}">
+                        <TextBlock Text="Username"
+                                   FontSize="13"
+                                   FontWeight="Medium"
+                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBox Text="{Binding Username}"
+                                 Watermark="Choose a username">
+                            <TextBox.InnerLeftContent>
+                                <i:Icon Value="fa-solid fa-user" 
+                                        FontSize="14"
+                                        Foreground="{StaticResource TextSecondaryBrush}"
+                                        Margin="8,0,0,0"/>
+                            </TextBox.InnerLeftContent>
+                        </TextBox>
+                    </StackPanel>
+                    
+                    
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Email"
+                                   FontSize="13"
+                                   FontWeight="Medium"
+                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBox Text="{Binding Email}"
+                                 Watermark="you@example.com">
+                            <TextBox.InnerLeftContent>
+                                <i:Icon Value="fa-solid fa-envelope" 
+                                        FontSize="14"
+                                        Foreground="{StaticResource TextSecondaryBrush}"
+                                        Margin="8,0,0,0"/>
+                            </TextBox.InnerLeftContent>
+                        </TextBox>
+                    </StackPanel>
+
+                    
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Password"
+                                   FontSize="13"
+                                   FontWeight="Medium"
+                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <TextBox PasswordChar="•"
+                                 Text="{Binding Password}"
+                                 Watermark="••••••••">
+                            <TextBox.InnerLeftContent>
+                                <i:Icon Value="fa-solid fa-lock" 
+                                        FontSize="14"
+                                        Foreground="{StaticResource TextSecondaryBrush}"
+                                        Margin="8,0,0,0"/>
+                            </TextBox.InnerLeftContent>
+                        </TextBox>
+                    </StackPanel>
+                </StackPanel>
+
+                
+                <StackPanel Spacing="12">
+                    
+                    <Button Command="{Binding LoginCommand}"
+                            IsDefault="{Binding !IsRegisterMode}"
+                            HorizontalAlignment="Stretch"
+                            Height="44"
+                            Classes="accent"
+                            IsEnabled="{Binding !IsLoading}"
+                            IsVisible="{Binding !IsRegisterMode}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <i:Icon Value="fa-solid fa-right-to-bracket" FontSize="16"/>
+                            <TextBlock Text="Sign In" 
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    
+                    <Button Command="{Binding RegisterCommand}"
+                            IsDefault="{Binding IsRegisterMode}"
+                            HorizontalAlignment="Stretch"
+                            Height="44"
+                            Classes="primary"
+                            IsEnabled="{Binding !IsLoading}"
+                            IsVisible="{Binding IsRegisterMode}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <i:Icon Value="fa-solid fa-user-plus" FontSize="16"/>
+                            <TextBlock Text="Create Account" 
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    
+                    <Button Command="{Binding ToggleModeCommand}"
+                            HorizontalAlignment="Center"
+                            Classes="ghost">
+                        <Panel>
+                            <TextBlock Text="Don't have an account? Sign up"
+                                       IsVisible="{Binding !IsRegisterMode}"/>
+                            <TextBlock Text="Already have an account? Sign in"
+                                       IsVisible="{Binding IsRegisterMode}"/>
+                        </Panel>
+                    </Button>
+                </StackPanel>
+
+                
+                <ProgressBar IsIndeterminate="True" 
+                             IsVisible="{Binding IsLoading}"
+                             Height="4"
+                             Margin="0,8,0,0"/>
+            </StackPanel>
+        </Border>
+        
+        
+        <TextBlock Text="v1.0.0"
+                   FontSize="11"
+                   Foreground="{StaticResource TextSecondaryBrush}"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Bottom"
+                   Margin="16"/>
+
+        
+        <controls:NotificationToast/>
+    </Grid>
+</Window>

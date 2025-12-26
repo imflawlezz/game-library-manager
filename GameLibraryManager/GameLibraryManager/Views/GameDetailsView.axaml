@@ -1,0 +1,165 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GameLibraryManager.ViewModels"
+             xmlns:controls="using:GameLibraryManager.Controls"
+             xmlns:i="https://github.com/projektanker/icons.avalonia"
+             x:Class="GameLibraryManager.Views.GameDetailsView"
+             x:DataType="vm:GameDetailsViewModel">
+    
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      IsVisible="{Binding Game, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <Grid MaxWidth="900" Margin="0,0,0,40">
+                <Grid ColumnDefinitions="280,*">
+                    
+                    <Border Grid.Column="0"
+                            CornerRadius="12"
+                            ClipToBounds="True"
+                            Height="400"
+                            VerticalAlignment="Top"
+                            BoxShadow="0 8 32 0 #40000000">
+                        <controls:AsyncImage Source="{Binding Game.CoverImageURL}"/>
+                    </Border>
+                    
+                    <StackPanel Grid.Column="1" Margin="28,0,0,0" Spacing="16">
+                        
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="{Binding Game.Title}"
+                                       FontSize="28"
+                                       FontWeight="Bold"
+                                       Foreground="#F0F6FC"
+                                       TextWrapping="Wrap"/>
+                            
+                            <WrapPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Game.Developer}"
+                                           FontSize="14"
+                                           Foreground="#8B949E"
+                                           IsVisible="{Binding Game.Developer, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                <TextBlock Text=" • "
+                                           FontSize="14"
+                                           Foreground="#484F58"
+                                           IsVisible="{Binding Game.Publisher, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                <TextBlock Text="{Binding Game.Publisher}"
+                                           FontSize="14"
+                                           Foreground="#8B949E"
+                                           IsVisible="{Binding Game.Publisher, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                <TextBlock Text=" • "
+                                           FontSize="14"
+                                           Foreground="#484F58"
+                                           IsVisible="{Binding Game.ReleaseYear, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                                <TextBlock Text="{Binding Game.ReleaseYear}"
+                                           FontSize="14"
+                                           Foreground="#8B949E"
+                                           IsVisible="{Binding Game.ReleaseYear, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                            </WrapPanel>
+                        </StackPanel>
+                        
+                        <WrapPanel Orientation="Horizontal">
+                            <ItemsControl ItemsSource="{Binding Game.Genres}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#58A6FF"
+                                                CornerRadius="4"
+                                                Padding="8,3"
+                                                Margin="0,0,6,6">
+                                            <TextBlock Text="{Binding GenreName}"
+                                                       FontSize="11"
+                                                       FontWeight="Medium"
+                                                       Foreground="#0D1117"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            
+                            <ItemsControl ItemsSource="{Binding Game.Platforms}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#21262D"
+                                                CornerRadius="4"
+                                                Padding="8,3"
+                                                Margin="0,0,6,6">
+                                            <TextBlock Text="{Binding PlatformName}"
+                                                       FontSize="11"
+                                                       Foreground="#8B949E"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </WrapPanel>
+                        
+                        <TextBlock Text="{Binding Game.Description}"
+                                   FontSize="13"
+                                   Foreground="#C9D1D9"
+                                   TextWrapping="Wrap"
+                                   LineHeight="20"
+                                   MaxLines="4"
+                                   IsVisible="{Binding Game.Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                        
+                        <Border Height="1" Background="#21262D" Margin="0,4"/>
+                        
+                        <Grid IsVisible="{Binding IsInLibrary}">
+                            <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                                
+                                <StackPanel Grid.Column="0" Grid.Row="0" Spacing="4">
+                                    <TextBlock Text="Status" FontSize="11" Foreground="#6E7681"/>
+                                    <ComboBox ItemsSource="{Binding StatusOptions}"
+                                              SelectedItem="{Binding Status}"
+                                              HorizontalAlignment="Stretch"
+                                              Padding="10,6"/>
+                                </StackPanel>
+                                
+                                <StackPanel Grid.Column="1" Grid.Row="0" Spacing="4">
+                                    <TextBlock Text="Rating" FontSize="11" Foreground="#6E7681"/>
+                                    <TextBox Text="{Binding Rating}"
+                                             Watermark="0-10"
+                                             Padding="10,6"/>
+                                </StackPanel>
+                                
+                                <StackPanel Grid.Column="2" Grid.Row="0" Spacing="4">
+                                    <TextBlock Text="Hours" FontSize="11" Foreground="#6E7681"/>
+                                    <TextBox Text="{Binding HoursPlayed}"
+                                             Watermark="0"
+                                             Padding="10,6"/>
+                                </StackPanel>
+                                
+                                <StackPanel Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" Spacing="4">
+                                    <TextBlock Text="Notes" FontSize="11" Foreground="#6E7681"/>
+                                    <TextBox Text="{Binding PersonalNotes}"
+                                             Watermark="Your thoughts..."
+                                             TextWrapping="Wrap"
+                                             AcceptsReturn="True"
+                                             Height="60"
+                                             Padding="10,8"/>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </ScrollViewer>
+        
+        <Border Background="#CC0D1117"
+                IsVisible="{Binding IsLoading}">
+            <StackPanel VerticalAlignment="Center" 
+                        HorizontalAlignment="Center"
+                        Spacing="16">
+                <ProgressBar IsIndeterminate="True" Width="200"/>
+                <TextBlock Text="Loading..."
+                           FontSize="14"
+                           Foreground="#8B949E"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

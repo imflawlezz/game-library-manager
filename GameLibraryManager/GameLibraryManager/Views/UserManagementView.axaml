@@ -1,0 +1,298 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GameLibraryManager.ViewModels"
+             xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:spinner="using:GameLibraryManager.Controls"
+             x:Class="GameLibraryManager.Views.UserManagementView"
+             x:DataType="vm:UserManagementViewModel">
+    
+    <Grid RowDefinitions="Auto,*">
+        
+        <Border Grid.Row="0"
+                Background="#161B22"
+                CornerRadius="12"
+                Padding="20,16"
+                Margin="0,0,0,20"
+                BorderBrush="#30363D"
+                BorderThickness="1">
+            <Grid ColumnDefinitions="Auto,Auto,Auto,*">
+                
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" Margin="0,0,32,0">
+                    <Border Width="40" Height="40"
+                            CornerRadius="10"
+                            Background="#21262D">
+                        <i:Icon Value="fa-solid fa-users" 
+                                FontSize="18"
+                                Foreground="#58A6FF"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="{Binding TotalUsers}"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   Foreground="#F0F6FC"/>
+                        <TextBlock Text="Total Users"
+                                   FontSize="12"
+                                   Foreground="#8B949E"/>
+                    </StackPanel>
+                </StackPanel>
+                
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" Margin="0,0,32,0">
+                    <Border Width="40" Height="40"
+                            CornerRadius="10"
+                            Background="#21262D">
+                        <i:Icon Value="fa-solid fa-user-shield" 
+                                FontSize="18"
+                                Foreground="#8957E5"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="{Binding AdminCount}"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   Foreground="#F0F6FC"/>
+                        <TextBlock Text="Admins"
+                                   FontSize="12"
+                                   Foreground="#8B949E"/>
+                    </StackPanel>
+                </StackPanel>
+                
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12">
+                    <Border Width="40" Height="40"
+                            CornerRadius="10"
+                            Background="#21262D">
+                        <i:Icon Value="fa-solid fa-user" 
+                                FontSize="18"
+                                Foreground="#238636"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="{Binding RegularUserCount}"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   Foreground="#F0F6FC"/>
+                        <TextBlock Text="Regular Users"
+                                   FontSize="12"
+                                   Foreground="#8B949E"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+        
+        <Border Grid.Row="1"
+                Background="#161B22"
+                CornerRadius="12"
+                BorderBrush="#30363D"
+                BorderThickness="1"
+                ClipToBounds="True">
+            <Grid RowDefinitions="Auto,*">
+                
+                <Border Grid.Row="0"
+                        Background="#21262D"
+                        Padding="24,16"
+                        BorderBrush="#30363D"
+                        BorderThickness="0,0,0,1">
+                    <Grid ColumnDefinitions="60,2*,*,140,140,100">
+                        <TextBlock Grid.Column="0" 
+                                   Text="ID" 
+                                   FontWeight="SemiBold" 
+                                   FontSize="13"
+                                   Foreground="#8B949E"/>
+                        <TextBlock Grid.Column="1" 
+                                   Text="User" 
+                                   FontWeight="SemiBold" 
+                                   FontSize="13"
+                                   Foreground="#8B949E"/>
+                        <TextBlock Grid.Column="2" 
+                                   Text="Role" 
+                                   FontWeight="SemiBold" 
+                                   FontSize="13"
+                                   Foreground="#8B949E"/>
+                        <TextBlock Grid.Column="3" 
+                                   Text="Created" 
+                                   FontWeight="SemiBold" 
+                                   FontSize="13"
+                                   Foreground="#8B949E"/>
+                        <TextBlock Grid.Column="4" 
+                                   Text="Last Login" 
+                                   FontWeight="SemiBold" 
+                                   FontSize="13"
+                                   Foreground="#8B949E"/>
+                        <TextBlock Grid.Column="5" 
+                                   Text="Actions" 
+                                   FontWeight="SemiBold" 
+                                   FontSize="13"
+                                   Foreground="#8B949E"
+                                   HorizontalAlignment="Center"/>
+                    </Grid>
+                </Border>
+                
+                <Grid Grid.Row="1">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  IsVisible="{Binding !IsLoading}">
+                        <ItemsControl ItemsSource="{Binding FilteredUsers}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Padding="24,14"
+                                            BorderBrush="#30363D"
+                                            BorderThickness="0,0,0,1"
+                                            Background="Transparent">
+                                        <Border.Styles>
+                                            <Style Selector="Border:pointerover">
+                                                <Setter Property="Background" Value="#21262D"/>
+                                            </Style>
+                                        </Border.Styles>
+                                        <Grid ColumnDefinitions="60,2*,*,140,140,100">
+                                        
+                                        
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{Binding UserID}"
+                                                   FontSize="13"
+                                                   Foreground="#6E7681"
+                                                   VerticalAlignment="Center"/>
+                                        
+                                        
+                                        <StackPanel Grid.Column="1" 
+                                                    Orientation="Horizontal" 
+                                                    Spacing="14">
+                                            <Border Width="40" Height="40"
+                                                    CornerRadius="20"
+                                                    Background="#58A6FF"
+                                                    ClipToBounds="True">
+                                                <Panel>
+                                                    <i:Icon Value="fa-solid fa-user" 
+                                                            FontSize="18"
+                                                            Foreground="#0D1117"
+                                                            HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"
+                                                            IsVisible="{Binding ProfileImageURL, Converter={x:Static StringConverters.IsNullOrEmpty}}"/>
+                                                    <Image Source="{Binding ProfileImageURL, Converter={StaticResource ImageUrlConverter}}"
+                                                           Stretch="UniformToFill"
+                                                           IsVisible="{Binding ProfileImageURL, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                                </Panel>
+                                            </Border>
+                                            <StackPanel VerticalAlignment="Center" Spacing="2">
+                                                <TextBlock Text="{Binding Username}"
+                                                           FontSize="14"
+                                                           FontWeight="Medium"
+                                                           Foreground="#F0F6FC"/>
+                                                <TextBlock Text="{Binding Email}"
+                                                           FontSize="12"
+                                                           Foreground="#8B949E"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                        
+                                        
+                                        <Panel Grid.Column="2" VerticalAlignment="Center">
+                                            <Border CornerRadius="6"
+                                                    Padding="10,4"
+                                                    HorizontalAlignment="Left"
+                                                    IsVisible="{Binding Role, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="#8957E5"/>
+                                                </Border.Background>
+                                                <Border.IsVisible>
+                                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                        <Binding Path="Role" Converter="{x:Static StringConverters.IsNotNullOrEmpty}"/>
+                                                        <Binding Path="Role" Converter="{x:Static StringConverters.IsNotNullOrEmpty}"/>
+                                                    </MultiBinding>
+                                                </Border.IsVisible>
+                                                <TextBlock Text="{Binding Role}"
+                                                           FontSize="12"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="#FFFFFF"/>
+                                            </Border>
+                                        </Panel>
+                                        
+                                        
+                                        <TextBlock Grid.Column="3"
+                                                   Text="{Binding CreatedAt, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}"
+                                                   FontSize="13"
+                                                   Foreground="#8B949E"
+                                                   VerticalAlignment="Center"/>
+                                        
+                                        
+                                        <TextBlock Grid.Column="4"
+                                                   Text="{Binding LastLogin, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}"
+                                                   FontSize="13"
+                                                   Foreground="#8B949E"
+                                                   VerticalAlignment="Center"/>
+                                        
+                                        
+                                        <StackPanel Grid.Column="5"
+                                                    Orientation="Horizontal"
+                                                    Spacing="8"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center">
+                                            
+                                            <Button Classes="icon"
+                                                    Command="{Binding $parent[ItemsControl].((vm:UserManagementViewModel)DataContext).EditUserCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip.Tip="Edit User"
+                                                    Width="36" Height="36"
+                                                    CornerRadius="8">
+                                                <Button.Styles>
+                                                    <Style Selector="Button.icon:pointerover">
+                                                        <Setter Property="Background" Value="#30363D"/>
+                                                    </Style>
+                                                </Button.Styles>
+                                                <i:Icon Value="fa-solid fa-pen" 
+                                                        FontSize="14"
+                                                        Foreground="#58A6FF"/>
+                                            </Button>
+                                            
+                                            
+                                            <Button Classes="icon"
+                                                    Command="{Binding $parent[ItemsControl].((vm:UserManagementViewModel)DataContext).DeleteUserCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip.Tip="Delete User"
+                                                    Width="36" Height="36"
+                                                    CornerRadius="8">
+                                                <Button.Styles>
+                                                    <Style Selector="Button.icon:pointerover">
+                                                        <Setter Property="Background" Value="#F8514920"/>
+                                                    </Style>
+                                                </Button.Styles>
+                                                <i:Icon Value="fa-solid fa-trash" 
+                                                        FontSize="14"
+                                                        Foreground="#F85149"/>
+                                            </Button>
+                                        </StackPanel>
+                                        
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                    
+                    <Border Background="#E0161B22"
+                            IsVisible="{Binding IsLoading}">
+                        <spinner:LoadingSpinner Text="Loading users"/>
+                    </Border>
+                    
+                    <Border IsVisible="{Binding IsEmpty}"
+                            Background="#161B22">
+                        <StackPanel VerticalAlignment="Center" 
+                                    HorizontalAlignment="Center"
+                                    Spacing="16">
+                            <i:Icon Value="fa-solid fa-users-slash" 
+                                    FontSize="48"
+                                    Foreground="#6E7681"/>
+                            <TextBlock Text="No users found"
+                                       FontSize="16"
+                                       Foreground="#8B949E"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Border>
+        
+
+        
+    </Grid>
+</UserControl>

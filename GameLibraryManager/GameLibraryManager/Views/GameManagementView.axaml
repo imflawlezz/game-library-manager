@@ -1,0 +1,249 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GameLibraryManager.ViewModels"
+             xmlns:controls="using:GameLibraryManager.Controls"
+             xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:spinner="using:GameLibraryManager.Controls"
+             x:Class="GameLibraryManager.Views.GameManagementView"
+             x:DataType="vm:GameManagementViewModel">
+    
+    <Grid RowDefinitions="Auto,*">
+        
+        
+        <Border Grid.Row="0"
+                Background="#161B22"
+                CornerRadius="12"
+                Padding="20,16"
+                Margin="0,0,0,20"
+                BorderBrush="#30363D"
+                BorderThickness="1">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <Border Width="40" Height="40"
+                        CornerRadius="10"
+                        Background="#21262D">
+                    <i:Icon Value="fa-solid fa-gamepad" 
+                            FontSize="18"
+                            Foreground="#58A6FF"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="{Binding TotalGames}"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               Foreground="#F0F6FC"/>
+                    <TextBlock Text="Total Games"
+                               FontSize="12"
+                               Foreground="#8B949E"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        
+        
+        <Border Grid.Row="1"
+                Background="#161B22"
+                CornerRadius="12"
+                BorderBrush="#30363D"
+                BorderThickness="1"
+                ClipToBounds="True">
+            <Grid RowDefinitions="Auto,*">
+                
+                
+                <Border Grid.Row="0"
+                        Background="#21262D"
+                        Padding="24,16"
+                        BorderBrush="#30363D"
+                        BorderThickness="0,0,0,1">
+                    <Grid ColumnDefinitions="80,2*,*,*,*,120">
+                        <TextBlock Grid.Column="0" 
+                                   Text="Cover" 
+                                   FontWeight="SemiBold" 
+                                   FontSize="13"
+                                   Foreground="#8B949E"/>
+                        <TextBlock Grid.Column="1" 
+                                   Text="Title" 
+                                   FontWeight="SemiBold" 
+                                   FontSize="13"
+                                   Foreground="#8B949E"/>
+                        <TextBlock Grid.Column="2" 
+                                   Text="Developer" 
+                                   FontWeight="SemiBold" 
+                                   FontSize="13"
+                                   Foreground="#8B949E"/>
+                        <TextBlock Grid.Column="3" 
+                                   Text="Genres" 
+                                   FontWeight="SemiBold" 
+                                   FontSize="13"
+                                   Foreground="#8B949E"/>
+                        <TextBlock Grid.Column="4" 
+                                   Text="Platforms" 
+                                   FontWeight="SemiBold" 
+                                   FontSize="13"
+                                   Foreground="#8B949E"/>
+                        <TextBlock Grid.Column="5" 
+                                   Text="Actions" 
+                                   FontWeight="SemiBold" 
+                                   FontSize="13"
+                                   Foreground="#8B949E"
+                                   HorizontalAlignment="Center"/>
+                    </Grid>
+                </Border>
+                
+                
+                <Grid Grid.Row="1">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  IsVisible="{Binding !IsLoading}">
+                        <ItemsControl ItemsSource="{Binding FilteredGames}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Padding="24,12"
+                                            BorderBrush="#30363D"
+                                            BorderThickness="0,0,0,1"
+                                            Background="Transparent">
+                                        <Border.Styles>
+                                            <Style Selector="Border:pointerover">
+                                                <Setter Property="Background" Value="#21262D"/>
+                                            </Style>
+                                        </Border.Styles>
+                                        <Grid ColumnDefinitions="80,2*,*,*,*,120">
+                                        
+                                        
+                                        <Border Grid.Column="0"
+                                                Width="56" Height="75"
+                                                CornerRadius="6"
+                                                ClipToBounds="True"
+                                                Background="#30363D"
+                                                HorizontalAlignment="Left">
+                                            <controls:AsyncImage Source="{Binding CoverImageURL}"/>
+                                        </Border>
+                                        
+                                        
+                                        <StackPanel Grid.Column="1" 
+                                                    VerticalAlignment="Center"
+                                                    Spacing="4"
+                                                    Margin="12,0,0,0">
+                                            <TextBlock Text="{Binding Title}"
+                                                       FontSize="14"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#F0F6FC"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <TextBlock Text="{Binding Publisher}"
+                                                           FontSize="12"
+                                                           Foreground="#8B949E"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           IsVisible="{Binding Publisher, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                                <TextBlock Text="{Binding ReleaseYear}"
+                                                           FontSize="12"
+                                                           Foreground="#6E7681"
+                                                           IsVisible="{Binding ReleaseYear, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                        
+                                        
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding Developer}"
+                                                   FontSize="13"
+                                                   Foreground="#8B949E"
+                                                   VerticalAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        
+                                        
+                                        <TextBlock Grid.Column="3"
+                                                   Text="{Binding GenresString}"
+                                                   FontSize="13"
+                                                   Foreground="#8B949E"
+                                                   VerticalAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   TextWrapping="Wrap"
+                                                   MaxLines="2"/>
+                                        
+                                        
+                                        <TextBlock Grid.Column="4"
+                                                   Text="{Binding PlatformsString}"
+                                                   FontSize="13"
+                                                   Foreground="#8B949E"
+                                                   VerticalAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   TextWrapping="Wrap"
+                                                   MaxLines="2"/>
+                                        
+                                        
+                                        <StackPanel Grid.Column="5"
+                                                    Orientation="Horizontal"
+                                                    Spacing="8"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center">
+                                            
+                                            <Button Classes="icon"
+                                                    Command="{Binding $parent[ItemsControl].((vm:GameManagementViewModel)DataContext).EditGameCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip.Tip="Edit Game"
+                                                    Width="36" Height="36"
+                                                    CornerRadius="8">
+                                                <Button.Styles>
+                                                    <Style Selector="Button.icon:pointerover">
+                                                        <Setter Property="Background" Value="#30363D"/>
+                                                    </Style>
+                                                </Button.Styles>
+                                                <i:Icon Value="fa-solid fa-pen" 
+                                                        FontSize="14"
+                                                        Foreground="#58A6FF"/>
+                                            </Button>
+                                            
+                                            
+                                            <Button Classes="icon"
+                                                    Command="{Binding $parent[ItemsControl].((vm:GameManagementViewModel)DataContext).DeleteGameCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip.Tip="Delete Game"
+                                                    Width="36" Height="36"
+                                                    CornerRadius="8">
+                                                <Button.Styles>
+                                                    <Style Selector="Button.icon:pointerover">
+                                                        <Setter Property="Background" Value="#F8514920"/>
+                                                    </Style>
+                                                </Button.Styles>
+                                                <i:Icon Value="fa-solid fa-trash" 
+                                                        FontSize="14"
+                                                        Foreground="#F85149"/>
+                                            </Button>
+                                        </StackPanel>
+                                        
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                    
+                    <Border Background="#E0161B22"
+                            IsVisible="{Binding IsLoading}">
+                        <spinner:LoadingSpinner Text="Loading games"/>
+                    </Border>
+                    
+                    <Border IsVisible="{Binding IsEmpty}"
+                            Background="#161B22">
+                        <StackPanel VerticalAlignment="Center" 
+                                    HorizontalAlignment="Center"
+                                    Spacing="16">
+                            <i:Icon Value="fa-solid fa-gamepad" 
+                                    FontSize="48"
+                                    Foreground="#6E7681"/>
+                            <TextBlock Text="No games found"
+                                       FontSize="16"
+                                       Foreground="#8B949E"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="Add games to the catalog using the button above"
+                                       FontSize="14"
+                                       Foreground="#6E7681"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Border>
+        
+
+        
+    </Grid>
+</UserControl>

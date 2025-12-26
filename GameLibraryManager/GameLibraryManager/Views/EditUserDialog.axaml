@@ -1,0 +1,228 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:GameLibraryManager.ViewModels"
+        xmlns:controls="using:GameLibraryManager.Controls"
+        xmlns:i="https://github.com/projektanker/icons.avalonia"
+        x:Class="GameLibraryManager.Views.EditUserDialog"
+        x:DataType="vm:EditUserDialogViewModel"
+        Title="{Binding DialogTitle}"
+        Width="420"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Background="#0D1117">
+    
+    <Border Background="#161B22"
+            CornerRadius="12"
+            Margin="16"
+            Padding="24"
+            BorderBrush="#30363D"
+            BorderThickness="1"
+            BoxShadow="0 16 32 0 #60000000">
+        <StackPanel Spacing="24">
+            
+            <StackPanel Spacing="4">
+                <TextBlock Text="{Binding DialogTitle}"
+                           FontSize="20"
+                           FontWeight="SemiBold"
+                           Foreground="#F0F6FC"/>
+                <TextBlock Text="{Binding DialogSubtitle}"
+                           FontSize="13"
+                           Foreground="#8B949E"/>
+            </StackPanel>
+            
+            <Border Background="#21262D"
+                    CornerRadius="10"
+                    Padding="16"
+                    IsVisible="{Binding IsEditMode}">
+                <StackPanel Orientation="Horizontal" Spacing="14">
+                    <Border Width="52" Height="52"
+                            CornerRadius="26"
+                            Background="#30363D"
+                            ClipToBounds="True">
+                        <Panel>
+                            <Border Background="#58A6FF"
+                                    IsVisible="{Binding ProfileImageURL, Converter={x:Static StringConverters.IsNullOrEmpty}}">
+                                <i:Icon Value="fa-solid fa-user" 
+                                        FontSize="24"
+                                        Foreground="#0D1117"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+                            </Border>
+                            <controls:AsyncImage Source="{Binding ProfileImageURL}"/>
+                        </Panel>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="{Binding Username}"
+                                   FontSize="15"
+                                   FontWeight="Medium"
+                                   Foreground="#F0F6FC"/>
+                        <TextBlock Text="{Binding Email}"
+                                   FontSize="12"
+                                   Foreground="#8B949E"/>
+                        <Border Background="{Binding RoleBadgeColor}"
+                                CornerRadius="4"
+                                Padding="8,2"
+                                Margin="0,4,0,0"
+                                HorizontalAlignment="Left">
+                            <TextBlock Text="{Binding Role}"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"
+                                       Foreground="#FFFFFF"/>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            
+            <StackPanel Spacing="16">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Email"
+                               FontSize="13"
+                               FontWeight="Medium"
+                               Foreground="#8B949E"/>
+                    <TextBox Text="{Binding Email}"
+                             IsReadOnly="{Binding IsEditMode}"
+                             Watermark="Enter email address">
+                        <TextBox.InnerLeftContent>
+                            <i:Icon Value="fa-solid fa-envelope" 
+                                    FontSize="14"
+                                    Foreground="#6E7681"
+                                    Margin="10,0,0,0"/>
+                        </TextBox.InnerLeftContent>
+                    </TextBox>
+                </StackPanel>
+                
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Username"
+                               FontSize="13"
+                               FontWeight="Medium"
+                               Foreground="#8B949E"/>
+                    <TextBox Text="{Binding Username}"
+                             Watermark="Enter username">
+                        <TextBox.InnerLeftContent>
+                            <i:Icon Value="fa-solid fa-user" 
+                                    FontSize="14"
+                                    Foreground="#6E7681"
+                                    Margin="10,0,0,0"/>
+                        </TextBox.InnerLeftContent>
+                    </TextBox>
+                </StackPanel>
+                
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Profile Image URL"
+                               FontSize="13"
+                               FontWeight="Medium"
+                               Foreground="#8B949E"/>
+                    <TextBox Text="{Binding ProfileImageURL}"
+                             Watermark="Enter image URL (optional)">
+                        <TextBox.InnerLeftContent>
+                            <i:Icon Value="fa-solid fa-image" 
+                                    FontSize="14"
+                                    Foreground="#6E7681"
+                                    Margin="10,0,0,0"/>
+                        </TextBox.InnerLeftContent>
+                    </TextBox>
+                </StackPanel>
+                
+                <StackPanel Spacing="8" IsVisible="{Binding IsEditMode}">
+                    <TextBlock Text="Join Date"
+                               FontSize="13"
+                               FontWeight="Medium"
+                               Foreground="#8B949E"/>
+                    <TextBox Text="{Binding JoinDate}"
+                             IsReadOnly="True"
+                             Watermark="Join date">
+                        <TextBox.InnerLeftContent>
+                            <i:Icon Value="fa-solid fa-calendar" 
+                                    FontSize="14"
+                                    Foreground="#6E7681"
+                                    Margin="10,0,0,0"/>
+                        </TextBox.InnerLeftContent>
+                    </TextBox>
+                </StackPanel>
+                
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Role"
+                               FontSize="13"
+                               FontWeight="Medium"
+                               Foreground="#8B949E"/>
+                    <ComboBox SelectedItem="{Binding Role}"
+                              ItemsSource="{Binding AvailableRoles}"
+                              HorizontalAlignment="Stretch">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+                
+                <StackPanel Spacing="8">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="{Binding PasswordLabel}"
+                                   FontSize="13"
+                                   FontWeight="Medium"
+                                   Foreground="#8B949E"/>
+                        <TextBlock Text="{Binding PasswordLabelHint}"
+                                   FontSize="12"
+                                   Foreground="#6E7681"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBox Text="{Binding NewPassword}"
+                             PasswordChar="•"
+                             Watermark="{Binding PasswordWatermark}">
+                        <TextBox.InnerLeftContent>
+                            <i:Icon Value="fa-solid fa-lock" 
+                                    FontSize="14"
+                                    Foreground="#6E7681"
+                                    Margin="10,0,0,0"/>
+                        </TextBox.InnerLeftContent>
+                    </TextBox>
+                </StackPanel>
+            </StackPanel>
+            
+            <Border Background="#F8514920"
+                    BorderBrush="#F85149"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="12"
+                    IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <i:Icon Value="fa-solid fa-circle-exclamation" 
+                            FontSize="16" 
+                            Foreground="#F85149"/>
+                    <TextBlock Text="{Binding ErrorMessage}" 
+                               Foreground="#F85149"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+            
+            <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,8,0,0">
+                <Button Grid.Column="1"
+                        Command="{Binding CancelCommand}"
+                        Content="Cancel"
+                        Margin="0,0,12,0"
+                        MinWidth="100"
+                        Height="40"
+                        IsEnabled="{Binding !IsLoading}"/>
+                <Button Grid.Column="2"
+                        Command="{Binding SaveCommand}"
+                        Classes="primary"
+                        MinWidth="120"
+                        Height="40"
+                        IsEnabled="{Binding !IsLoading}">
+                    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                        <i:Icon Value="fa-solid fa-check" FontSize="14" IsVisible="{Binding !IsLoading}"/>
+                        <i:Icon x:Name="SpinnerIcon" Value="fa-solid fa-spinner" FontSize="14" IsVisible="{Binding IsLoading}"/>
+                        <TextBlock Text="Save Changes" 
+                                   FontWeight="Medium"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+            
+        </StackPanel>
+    </Border>
+</Window>
+

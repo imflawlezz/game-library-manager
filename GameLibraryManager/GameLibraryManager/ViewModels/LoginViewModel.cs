@@ -85,11 +85,12 @@ namespace GameLibraryManager.ViewModels
 
             try
             {
+                var passwordHash = AuthenticationService.HashPassword(Password);
                 var user = await Task.Run(() => _authService.AuthenticateAsync(Email, Password));
                 
                 if (user != null)
                 {
-                    _sessionManager.SetCurrentUser(user);
+                    _sessionManager.SetCurrentUser(user, Email, passwordHash);
                     NavigateToMainWindow();
                 }
                 else

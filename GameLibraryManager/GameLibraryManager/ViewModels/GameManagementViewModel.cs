@@ -18,6 +18,7 @@ using ReactiveUI;
 using GameLibraryManager.Models;
 using GameLibraryManager.Services;
 using GameLibraryManager.Views;
+using GameLibraryManager;
 
 namespace GameLibraryManager.ViewModels
 {
@@ -163,8 +164,47 @@ namespace GameLibraryManager.ViewModels
             });
         }
 
+        private async Task<bool> ValidateSessionAsync()
+        {
+            try
+            {
+                var isValid = await _sessionManager.ValidateSessionAsync(_dbService);
+                if (!isValid)
+                {
+                    NotificationService.ShowError("Your session has expired. Please log in again.");
+                    Logout();
+                    return false;
+                }
+                return true;
+            }
+            catch
+            {
+                NotificationService.ShowError("Session validation failed. Please log in again.");
+                Logout();
+                return false;
+            }
+        }
+
+        private void Logout()
+        {
+            try
+            {
+                _sessionManager.ClearSession();
+                
+                if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                {
+                    App.ShowLoginWindow(desktop);
+                }
+            }
+            catch
+            {
+            }
+        }
+
         private async Task AddGameAsync()
         {
+            if (!await ValidateSessionAsync()) return;
+
             var dialog = new AddEditGameDialog();
             var viewModel = new AddEditGameDialogViewModel(_dbService, _sessionManager, (saved) =>
             {
@@ -187,6 +227,7 @@ namespace GameLibraryManager.ViewModels
         private async Task EditGameAsync(Game game)
         {
             if (game == null) return;
+            if (!await ValidateSessionAsync()) return;
 
             var dialog = new AddEditGameDialog();
             var viewModel = new AddEditGameDialogViewModel(_dbService, _sessionManager, (saved) =>
@@ -210,6 +251,7 @@ namespace GameLibraryManager.ViewModels
         private async Task DeleteGameAsync(Game game)
         {
             if (game == null) return;
+            if (!await ValidateSessionAsync()) return;
 
             var parentWindow = GetParentWindow();
             if (parentWindow != null)
@@ -254,6 +296,7 @@ namespace GameLibraryManager.ViewModels
         private async Task ExportGlobalLibraryAsync()
         {
             if (_sessionManager.CurrentUser == null) return;
+            if (!await ValidateSessionAsync()) return;
 
             try
             {
@@ -315,6 +358,7 @@ namespace GameLibraryManager.ViewModels
         private async Task ImportGlobalLibraryAsync()
         {
             if (_sessionManager.CurrentUser == null) return;
+            if (!await ValidateSessionAsync()) return;
 
             try
             {

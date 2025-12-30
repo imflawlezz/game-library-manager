@@ -17,6 +17,7 @@ using ReactiveUI;
 using GameLibraryManager.Models;
 using GameLibraryManager.Services;
 using GameLibraryManager.Views;
+using GameLibraryManager;
 
 namespace GameLibraryManager.ViewModels
 {
@@ -164,6 +165,8 @@ namespace GameLibraryManager.ViewModels
 
         private async Task AddUserAsync()
         {
+            if (!await ValidateSessionAsync()) return;
+
             var dialog = new EditUserDialog();
             var viewModel = new EditUserDialogViewModel(_dbService, (saved) =>
             {
@@ -186,6 +189,7 @@ namespace GameLibraryManager.ViewModels
         private async Task EditUserAsync(User user)
         {
             if (user == null) return;
+            if (!await ValidateSessionAsync()) return;
 
             var dialog = new EditUserDialog();
             var viewModel = new EditUserDialogViewModel(user, _dbService, (saved) =>
@@ -206,9 +210,47 @@ namespace GameLibraryManager.ViewModels
             }
         }
 
+        private async Task<bool> ValidateSessionAsync()
+        {
+            try
+            {
+                var isValid = await _sessionManager.ValidateSessionAsync(_dbService);
+                if (!isValid)
+                {
+                    NotificationService.ShowError("Your session has expired. Please log in again.");
+                    Logout();
+                    return false;
+                }
+                return true;
+            }
+            catch
+            {
+                NotificationService.ShowError("Session validation failed. Please log in again.");
+                Logout();
+                return false;
+            }
+        }
+
+        private void Logout()
+        {
+            try
+            {
+                _sessionManager.ClearSession();
+                
+                if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                {
+                    App.ShowLoginWindow(desktop);
+                }
+            }
+            catch
+            {
+            }
+        }
+
         private async Task DeleteUserAsync(User user)
         {
             if (user == null) return;
+            if (!await ValidateSessionAsync()) return;
 
             if (user.UserID == _sessionManager.CurrentUser?.UserID)
             {

@@ -12,6 +12,7 @@ using ReactiveUI.Fody.Helpers;
 using GameLibraryManager.Models;
 using GameLibraryManager.Services;
 using GameLibraryManager.Views;
+using GameLibraryManager;
 
 namespace GameLibraryManager.ViewModels
 {
@@ -188,10 +189,48 @@ namespace GameLibraryManager.ViewModels
             }
         }
 
+        private async Task<bool> ValidateSessionAsync()
+        {
+            try
+            {
+                var isValid = await _sessionManager.ValidateSessionAsync(_dbService);
+                if (!isValid)
+                {
+                    NotificationService.ShowError("Your session has expired. Please log in again.");
+                    Logout();
+                    return false;
+                }
+                return true;
+            }
+            catch
+            {
+                NotificationService.ShowError("Session validation failed. Please log in again.");
+                Logout();
+                return false;
+            }
+        }
+
+        private void Logout()
+        {
+            try
+            {
+                _sessionManager.ClearSession();
+                
+                if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                {
+                    App.ShowLoginWindow(desktop);
+                }
+            }
+            catch
+            {
+            }
+        }
+
         private async Task ReviewReportAsync(ReportSuggestion report)
         {
             if (report == null || _sessionManager.CurrentUser == null)
                 return;
+            if (!await ValidateSessionAsync()) return;
 
             var dialog = new ReviewReportDialog();
             bool reviewCompleted = false;
@@ -250,6 +289,7 @@ namespace GameLibraryManager.ViewModels
         {
             if (report == null)
                 return;
+            if (!await ValidateSessionAsync()) return;
 
             var parentWindow = GetParentWindow();
             if (parentWindow != null)

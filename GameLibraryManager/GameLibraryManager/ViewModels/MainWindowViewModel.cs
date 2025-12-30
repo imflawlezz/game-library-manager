@@ -410,6 +410,27 @@ namespace GameLibraryManager.ViewModels
             }
         }
 
+        private async Task<bool> ValidateSessionAsync()
+        {
+            try
+            {
+                var isValid = await _sessionManager.ValidateSessionAsync(_dbService);
+                if (!isValid)
+                {
+                    NotificationService.ShowError("Your session has expired. Please log in again.");
+                    Logout();
+                    return false;
+                }
+                return true;
+            }
+            catch
+            {
+                NotificationService.ShowError("Session validation failed. Please log in again.");
+                Logout();
+                return false;
+            }
+        }
+
         private async Task SaveGameDetails()
         {
             if (CurrentViewModel is GameDetailsViewModel vm)

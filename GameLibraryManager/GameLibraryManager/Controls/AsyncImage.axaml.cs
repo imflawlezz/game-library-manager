@@ -49,12 +49,14 @@ namespace GameLibraryManager.Controls
 
             ImageControl.Opacity = 0;
             ImageControl.Source = null;
-            LoadingPlaceholder.Opacity = 1;
 
             if (string.IsNullOrWhiteSpace(url))
             {
+                LoadingPlaceholder.Opacity = 0;
                 return;
             }
+
+            LoadingPlaceholder.Opacity = 1;
 
             try
             {
@@ -112,19 +114,34 @@ namespace GameLibraryManager.Controls
 
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    if (!token.IsCancellationRequested && bitmap != null)
+                    if (token.IsCancellationRequested)
+                        return;
+                        
+                    if (bitmap != null)
                     {
                         ImageControl.Source = bitmap;
                         ImageControl.Opacity = 1;
+                        LoadingPlaceholder.Opacity = 0;
+                    }
+                    else
+                    {
                         LoadingPlaceholder.Opacity = 0;
                     }
                 });
             }
             catch (OperationCanceledException)
             {
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    LoadingPlaceholder.Opacity = 0;
+                });
             }
             catch
             {
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    LoadingPlaceholder.Opacity = 0;
+                });
             }
         }
     }

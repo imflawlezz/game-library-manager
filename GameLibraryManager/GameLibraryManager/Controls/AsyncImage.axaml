@@ -3,10 +3,13 @@
              xmlns:i="https://github.com/projektanker/icons.avalonia"
              x:Class="GameLibraryManager.Controls.AsyncImage">
     
-    <Grid>
+    <Grid HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch">
         
         <Image x:Name="ImageControl"
                Stretch="UniformToFill"
+               HorizontalAlignment="Stretch"
+               VerticalAlignment="Stretch"
                Opacity="0">
             <Image.Transitions>
                 <Transitions>
@@ -18,7 +21,9 @@
         
         <Border x:Name="LoadingPlaceholder"
                 Background="#21262D"
-                Opacity="1">
+                Opacity="1"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch">
             <Border.Transitions>
                 <Transitions>
                     <DoubleTransition Property="Opacity" Duration="0:0:0.2" Easing="CubicEaseIn"/>

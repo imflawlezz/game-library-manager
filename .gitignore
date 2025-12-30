@@ -63,4 +63,11 @@ _ReSharper*/
 GameLibraryManager/GameLibraryManager/bin/
 GameLibraryManager/GameLibraryManager/obj/
 
+# Build scripts
+Build/
+
+# macOS app bundle
+*.app
+GameLibraryManager/GameLibraryManager/*.app
+
 

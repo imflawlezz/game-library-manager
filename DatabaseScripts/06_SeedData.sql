@@ -627,5 +627,14 @@ INSERT INTO Reports (UserID, Type, Title, Content, Status, ReviewedBy, AdminNote
 
 (@User2ID, 'Report', 'Slow loading on game details', 'When clicking on a game to view details, it takes a few seconds to load. This seems slower than it should be, especially for games with large descriptions.', 'Resolved', @AdminUserIDForReports, 'We have optimized the game details loading. The page should now load much faster. Thank you for reporting this!', DATEADD(day, -3, GETDATE()), DATEADD(day, -1, GETDATE())),
 
-(@User3ID, 'Suggestion', 'Add wishlist notifications', 'It would be great to get notifications when games on my wishlist go on sale or get added to the catalog.', 'Reviewed', @AdminUserIDForReports, 'We are working on a notification system. This feature will be available soon.', DATEADD(day, -2, GETDATE()), DATEADD(hour, -12, GETDATE()));
+(@User3ID, 'Suggestion', 'Add wishlist notifications', 'It would be great to get notifications when games on my wishlist go on sale or get added to the catalog.', 'Reviewed', @AdminUserIDForReports, 'We are working on a notification system. This feature will be available soon.', DATEADD(day, -2, GETDATE()), DATEADD(hour, -12, GETDATE())),
+
+-- Unreviewed reports and suggestions
+(@User1ID, 'Suggestion', 'Add game tags system', 'It would be helpful to add custom tags to games in my library. For example, I could tag games as "co-op", "solo", "relaxing", etc. This would make organizing my collection much easier.', 'Unreviewed', NULL, NULL, DATEADD(day, -1, GETDATE()), NULL),
+
+(@User2ID, 'Report', 'Rating system not saving', 'I tried to rate a game but the rating doesn''t seem to save. When I refresh the page, my rating is gone. This happens with multiple games.', 'Unreviewed', NULL, NULL, DATEADD(hour, -18, GETDATE()), NULL),
+
+(@User4ID, 'Suggestion', 'Add playtime tracking per session', 'Could you add a feature to track individual play sessions? It would be nice to see when I played a game and for how long each time, not just the total hours.', 'Unreviewed', NULL, NULL, DATEADD(hour, -12, GETDATE()), NULL),
+
+(@User5ID, 'Report', 'Export button not working', 'When I try to export my library, the button doesn''t do anything. No file dialog appears and no error message is shown. I''ve tried multiple times.', 'Unreviewed', NULL, NULL, DATEADD(hour, -6, GETDATE()), NULL);
 GO

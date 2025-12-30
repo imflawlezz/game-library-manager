@@ -6,6 +6,10 @@
     <Application.Resources>
         <converters:ImageUrlConverter x:Key="ImageUrlConverter"/>
         <converters:ShouldShowCopyConverter x:Key="ShouldShowCopyConverter"/>
+        <converters:BoolToSelectedBackgroundConverter x:Key="BoolToSelectedBackgroundConverter"/>
+        <converters:BoolToSelectedForegroundConverter x:Key="BoolToSelectedForegroundConverter"/>
+        <converters:StatusIconConverter x:Key="StatusIconConverter"/>
+        <converters:StatusColorConverter x:Key="StatusColorConverter"/>
         
         <FontFamily x:Key="AppFont">Inter, Segoe UI Variable, Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, sans-serif</FontFamily>
         

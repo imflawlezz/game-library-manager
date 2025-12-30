@@ -612,3 +612,29 @@ SELECT @HardcoreGamerID, GameID, 'Playing', 8.5, 100.0 FROM Games WHERE Title = 
 INSERT INTO UserGames (UserID, GameID, Status) 
 SELECT @HardcoreGamerID, GameID, 'Wishlist' FROM Games WHERE Title = 'Baldur''s Gate 3';
 GO
+
+-- Seed reviewed reports
+DECLARE @AdminUserIDForReports INT = (SELECT UserID FROM Users WHERE Email = 'admin@test.com');
+DECLARE @User1ID INT = (SELECT UserID FROM Users WHERE Email = 'user@test.com');
+DECLARE @User2ID INT = (SELECT UserID FROM Users WHERE Email = 'gamer@test.com');
+DECLARE @User3ID INT = (SELECT UserID FROM Users WHERE Email = 'casual@test.com');
+DECLARE @User4ID INT = (SELECT UserID FROM Users WHERE Email = 'collector@test.com');
+DECLARE @User5ID INT = (SELECT UserID FROM Users WHERE Email = 'rpgfan@test.com');
+
+INSERT INTO Reports (UserID, Type, Title, Content, Status, ReviewedBy, AdminNotes, CreatedAt, ReviewedAt) VALUES
+(@User1ID, 'Suggestion', 'Add dark mode toggle', 'It would be great to have a dark mode toggle in the settings. The current dark theme is nice, but some users might prefer a light theme option.', 'Resolved', @AdminUserIDForReports, 'Great suggestion! We have added this feature to our roadmap and it will be available in the next update.', DATEADD(day, -15, GETDATE()), DATEADD(day, -12, GETDATE())),
+
+(@User2ID, 'Report', 'Search functionality issue', 'When searching for games, sometimes the results don''t update immediately. I have to clear the search and type again for it to work properly.', 'Resolved', @AdminUserIDForReports, 'Fixed in the latest update. The search now updates in real-time as you type.', DATEADD(day, -10, GETDATE()), DATEADD(day, -8, GETDATE())),
+
+(@User3ID, 'Suggestion', 'Export library to CSV', 'Would it be possible to add a feature to export my game library to a CSV file? This would be helpful for keeping backups or sharing with friends.', 'Reviewed', @AdminUserIDForReports, 'This is a good idea. We''ll consider adding this feature in a future release.', DATEADD(day, -8, GETDATE()), DATEADD(day, -6, GETDATE())),
+
+(@User4ID, 'Report', 'Profile image not loading', 'My profile image URL is correct but the image is not displaying in my profile. It works fine when I open the URL directly in a browser.', 'Resolved', @AdminUserIDForReports, 'This was a CORS issue. We have updated the image loading mechanism and it should work now. Please try refreshing your profile image URL.', DATEADD(day, -7, GETDATE()), DATEADD(day, -5, GETDATE())),
+
+(@User5ID, 'Suggestion', 'Add game completion percentage', 'It would be helpful to see a completion percentage for each game in my library, based on achievements or story progress if available.', 'Reviewed', @AdminUserIDForReports, 'Interesting feature request. We''ll look into integrating with achievement APIs where available.', DATEADD(day, -5, GETDATE()), DATEADD(day, -3, GETDATE())),
+
+(@User1ID, 'Suggestion', 'Filter by release year', 'Could you add a filter option to sort or filter games by release year? This would help me find games from specific time periods.', 'Dismissed', @AdminUserIDForReports, 'We already have this feature in the advanced filters. Please check the filter panel on the library page.', DATEADD(day, -4, GETDATE()), DATEADD(day, -2, GETDATE())),
+
+(@User2ID, 'Report', 'Slow loading on game details', 'When clicking on a game to view details, it takes a few seconds to load. This seems slower than it should be, especially for games with large descriptions.', 'Resolved', @AdminUserIDForReports, 'We have optimized the game details loading. The page should now load much faster. Thank you for reporting this!', DATEADD(day, -3, GETDATE()), DATEADD(day, -1, GETDATE())),
+
+(@User3ID, 'Suggestion', 'Add wishlist notifications', 'It would be great to get notifications when games on my wishlist go on sale or get added to the catalog.', 'Reviewed', @AdminUserIDForReports, 'We are working on a notification system. This feature will be available soon.', DATEADD(day, -2, GETDATE()), DATEADD(hour, -12, GETDATE()));
+GO

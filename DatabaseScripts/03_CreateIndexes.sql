@@ -26,6 +26,12 @@ GO
 CREATE NONCLUSTERED INDEX IX_GamePlatforms_PlatformID ON GamePlatforms(PlatformID);
 GO
 
-PRINT 'All indexes created successfully!';
+CREATE NONCLUSTERED INDEX IX_Reports_UserID ON Reports(UserID);
+CREATE NONCLUSTERED INDEX IX_Reports_Status ON Reports(Status);
+CREATE NONCLUSTERED INDEX IX_Reports_Type ON Reports(Type);
+CREATE NONCLUSTERED INDEX IX_Reports_CreatedAt ON Reports(CreatedAt);
+CREATE NONCLUSTERED INDEX IX_Reports_ReviewedBy ON Reports(ReviewedBy);
 GO
 
+PRINT 'All indexes created successfully!';
+GO

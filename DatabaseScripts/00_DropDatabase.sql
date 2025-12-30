@@ -30,4 +30,3 @@ BEGIN
     PRINT 'Database GameLibraryDB does not exist. Nothing to delete.';
 END
 GO
-

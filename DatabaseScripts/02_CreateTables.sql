@@ -90,5 +90,23 @@ CREATE TABLE AuditLog (
 );
 GO
 
+CREATE TABLE Reports (
+    ReportID INT IDENTITY(1,1) PRIMARY KEY,
+    UserID INT NOT NULL,
+    Type NVARCHAR(20) NOT NULL 
+        CHECK (Type IN ('Report', 'Suggestion')),
+    Title NVARCHAR(255) NOT NULL,
+    Content NVARCHAR(MAX) NOT NULL,
+    Status NVARCHAR(20) NOT NULL DEFAULT 'Unreviewed'
+        CHECK (Status IN ('Unreviewed', 'Reviewed', 'Resolved', 'Dismissed')),
+    ReviewedBy INT NULL,
+    AdminNotes NVARCHAR(MAX) NULL,
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    ReviewedAt DATETIME NULL,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (ReviewedBy) REFERENCES Users(UserID) ON DELETE NO ACTION
+);
+GO
+
 PRINT 'All tables created successfully!';
 GO

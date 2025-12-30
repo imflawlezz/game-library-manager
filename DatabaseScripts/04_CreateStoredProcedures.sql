@@ -1211,6 +1211,148 @@ BEGIN
 END
 GO
 
-PRINT 'All stored procedures created successfully!';
+CREATE PROCEDURE sp_CreateReport
+    @UserID INT,
+    @Type NVARCHAR(20),
+    @Title NVARCHAR(255),
+    @Content NVARCHAR(MAX),
+    @ReportID INT OUTPUT,
+    @ErrorMessage NVARCHAR(MAX) = NULL OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    BEGIN TRY
+        BEGIN TRANSACTION
+        
+        INSERT INTO Reports (UserID, Type, Title, Content, Status)
+        VALUES (@UserID, @Type, @Title, @Content, 'Unreviewed');
+        
+        SET @ReportID = SCOPE_IDENTITY();
+        
+        COMMIT TRANSACTION
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION
+        SET @ReportID = 0
+        SET @ErrorMessage = ERROR_MESSAGE()
+        RAISERROR(@ErrorMessage, 16, 1)
+    END CATCH
+END
 GO
 
+CREATE PROCEDURE sp_GetReports
+    @Status NVARCHAR(20) = NULL,
+    @Type NVARCHAR(20) = NULL,
+    @UserID INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT 
+        r.ReportID,
+        r.UserID,
+        r.Type,
+        r.Title,
+        r.Content,
+        r.Status,
+        r.ReviewedBy,
+        r.AdminNotes,
+        r.CreatedAt,
+        r.ReviewedAt,
+        u.Username AS CreatedByUsername,
+        u.Email AS CreatedByEmail,
+        ISNULL(u.ProfileImageURL, '') AS CreatedByProfileImageURL,
+        reviewer.Username AS ReviewedByUsername,
+        ISNULL(reviewer.ProfileImageURL, '') AS ReviewedByProfileImageURL
+    FROM Reports r
+    INNER JOIN Users u ON r.UserID = u.UserID
+    LEFT JOIN Users reviewer ON r.ReviewedBy = reviewer.UserID
+    WHERE 
+        (@Status IS NULL OR r.Status = @Status)
+        AND (@Type IS NULL OR r.Type = @Type)
+        AND (@UserID IS NULL OR r.UserID = @UserID)
+    ORDER BY 
+        CASE WHEN r.Status = 'Unreviewed' THEN 0 ELSE 1 END,
+        r.CreatedAt DESC;
+END
+GO
+
+CREATE PROCEDURE sp_GetUnreviewedReportsCount
+    @Count INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT @Count = COUNT(*)
+    FROM Reports
+    WHERE Status = 'Unreviewed';
+END
+GO
+
+CREATE PROCEDURE sp_ReviewReport
+    @ReportID INT,
+    @ReviewedBy INT,
+    @Status NVARCHAR(20),
+    @AdminNotes NVARCHAR(MAX) = NULL,
+    @Success BIT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    BEGIN TRY
+        BEGIN TRANSACTION
+        
+        UPDATE Reports
+        SET Status = @Status,
+            ReviewedBy = @ReviewedBy,
+            AdminNotes = @AdminNotes,
+            ReviewedAt = GETDATE()
+        WHERE ReportID = @ReportID;
+        
+        IF @@ROWCOUNT > 0
+            SET @Success = 1
+        ELSE
+            SET @Success = 0
+        
+        COMMIT TRANSACTION
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION
+        SET @Success = 0
+    END CATCH
+END
+GO
+
+CREATE PROCEDURE sp_DeleteReport
+    @ReportID INT,
+    @Success BIT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    BEGIN TRY
+        BEGIN TRANSACTION
+        
+        DELETE FROM Reports
+        WHERE ReportID = @ReportID;
+        
+        IF @@ROWCOUNT > 0
+            SET @Success = 1
+        ELSE
+            SET @Success = 0
+        
+        COMMIT TRANSACTION
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION
+        SET @Success = 0
+    END CATCH
+END
+GO
+
+PRINT 'All stored procedures created successfully!';
+GO

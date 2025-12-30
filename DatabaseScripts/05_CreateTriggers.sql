@@ -223,6 +223,54 @@ BEGIN
 END
 GO
 
-PRINT 'All triggers created successfully!';
+CREATE TRIGGER trg_Reports_AuditLog
+ON Reports
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (SELECT * FROM inserted) AND NOT EXISTS (SELECT * FROM deleted)
+    BEGIN
+        INSERT INTO AuditLog (UserID, TableName, Action, RecordID, FieldName, NewValue)
+        SELECT i.UserID, 'Reports', 'INSERT', i.ReportID, 'Type', i.Type FROM inserted i
+        UNION ALL
+        SELECT i.UserID, 'Reports', 'INSERT', i.ReportID, 'Title', i.Title FROM inserted i
+        UNION ALL
+        SELECT i.UserID, 'Reports', 'INSERT', i.ReportID, 'Status', i.Status FROM inserted i;
+    END
+
+    IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
+    BEGIN
+        INSERT INTO AuditLog (UserID, TableName, Action, RecordID, FieldName, OldValue, NewValue)
+        SELECT i.UserID, 'Reports', 'UPDATE', i.ReportID, 'Status', d.Status, i.Status
+        FROM inserted i
+        INNER JOIN deleted d ON i.ReportID = d.ReportID
+        WHERE i.Status != d.Status
+
+        UNION ALL
+
+        SELECT i.ReviewedBy, 'Reports', 'UPDATE', i.ReportID, 'ReviewedBy', 
+               CAST(d.ReviewedBy AS NVARCHAR(10)), CAST(i.ReviewedBy AS NVARCHAR(10))
+        FROM inserted i
+        INNER JOIN deleted d ON i.ReportID = d.ReportID
+        WHERE ISNULL(i.ReviewedBy, -1) != ISNULL(d.ReviewedBy, -1)
+
+        UNION ALL
+
+        SELECT i.ReviewedBy, 'Reports', 'UPDATE', i.ReportID, 'AdminNotes', d.AdminNotes, i.AdminNotes
+        FROM inserted i
+        INNER JOIN deleted d ON i.ReportID = d.ReportID
+        WHERE ISNULL(i.AdminNotes, '') != ISNULL(d.AdminNotes, '');
+    END
+
+    IF EXISTS (SELECT * FROM deleted) AND NOT EXISTS (SELECT * FROM inserted)
+    BEGIN
+        INSERT INTO AuditLog (UserID, TableName, Action, RecordID, FieldName, OldValue)
+        SELECT d.UserID, 'Reports', 'DELETE', d.ReportID, 'Title', d.Title FROM deleted d;
+    END
+END
 GO
 
+PRINT 'All triggers created successfully!';
+GO

@@ -1270,5 +1270,122 @@ namespace GameLibraryManager.Services
             }
         }
 
+        public async Task<string> ExportUserLibraryToXMLAsync(int userId)
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                using var command = new SqlCommand("sp_ExportUserLibraryToXML", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@UserID", userId);
+                var xmlOutputParam = new SqlParameter("@XMLOutput", SqlDbType.NVarChar, -1)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                command.Parameters.Add(xmlOutputParam);
+
+                await command.ExecuteNonQueryAsync();
+
+                return xmlOutputParam.Value?.ToString() ?? string.Empty;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to export user library: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<bool> ImportUserLibraryFromXMLAsync(int userId, string xmlData)
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                using var command = new SqlCommand("sp_ImportUserLibraryFromXML", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@UserID", userId);
+                command.Parameters.AddWithValue("@XMLData", xmlData);
+                var successParam = new SqlParameter("@Success", SqlDbType.Bit)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                command.Parameters.Add(successParam);
+
+                await command.ExecuteNonQueryAsync();
+
+                return (bool)(successParam.Value ?? false);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to import user library: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<string> ExportGlobalGameLibraryToXMLAsync()
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                using var command = new SqlCommand("sp_ExportGlobalGameLibraryToXML", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                var xmlOutputParam = new SqlParameter("@XMLOutput", SqlDbType.NVarChar, -1)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                command.Parameters.Add(xmlOutputParam);
+
+                await command.ExecuteNonQueryAsync();
+
+                return xmlOutputParam.Value?.ToString() ?? string.Empty;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to export global game library: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<bool> ImportGlobalGameLibraryFromXMLAsync(string xmlData, int createdBy)
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                using var command = new SqlCommand("sp_ImportGlobalGameLibraryFromXML", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@XMLData", xmlData);
+                command.Parameters.AddWithValue("@CreatedBy", createdBy);
+                var successParam = new SqlParameter("@Success", SqlDbType.Bit)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                command.Parameters.Add(successParam);
+
+                await command.ExecuteNonQueryAsync();
+
+                return (bool)(successParam.Value ?? false);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to import global game library: {ex.Message}", ex);
+            }
+        }
+
     }
 }

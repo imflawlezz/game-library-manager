@@ -229,6 +229,10 @@ BEGIN
     BEGIN TRY
         BEGIN TRANSACTION;
 
+        UPDATE Reports
+        SET ReviewedBy = NULL
+        WHERE ReviewedBy = @UserID;
+
         DELETE FROM AuditLog WHERE UserID = @UserID;
 
         DELETE FROM UserGames WHERE UserID = @UserID;

@@ -267,7 +267,7 @@ BEGIN
     IF EXISTS (SELECT * FROM deleted) AND NOT EXISTS (SELECT * FROM inserted)
     BEGIN
         INSERT INTO AuditLog (UserID, TableName, Action, RecordID, FieldName, OldValue)
-        SELECT d.UserID, 'Reports', 'DELETE', d.ReportID, 'Title', d.Title FROM deleted d;
+        SELECT NULL, 'Reports', 'DELETE', d.ReportID, 'Title', d.Title FROM deleted d;
     END
 END
 GO

@@ -1,15 +1,6 @@
 USE GameLibraryDB;
 GO
 
-DELETE FROM UserGames;
-DELETE FROM GamePlatforms;
-DELETE FROM GameGenres;
-DELETE FROM Games;
-DELETE FROM Users;
-DELETE FROM Platforms;
-DELETE FROM Genres;
-GO
-
 INSERT INTO Users (Email, PasswordHash, Username, Role, ProfileImageURL) VALUES
 ('admin@test.com', '3b612c75a7b5048a435fb6ec81e52ff92d6d795a8b5a9c17070f6a63c97a53b2', 'The Judge', 'Admin', 'https://cdna.artstation.com/p/assets/images/images/053/917/268/large/so-riya-tevii179.jpg?1663322139'),
 ('user@test.com', 'a61a8adf60038792a2cb88e670b20540a9d6c2ca204ab754fc768950e79e7d36', 'Just testing', 'User', 'https://i.pinimg.com/736x/a9/3e/86/a93e8677cdf10a4c28691c3e8719401a.jpg'),

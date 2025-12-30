@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Threading;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using GameLibraryManager.Models;
@@ -29,6 +30,10 @@ namespace GameLibraryManager.ViewModels
         [Reactive] public bool IsUserManagementActive { get; set; }
         [Reactive] public bool IsGameManagementActive { get; set; }
         [Reactive] public bool IsLogActive { get; set; }
+        [Reactive] public bool IsReportsActive { get; set; }
+        [Reactive] public bool IsReportsManagementActive { get; set; }
+        [Reactive] public int UnreviewedReportsCount { get; set; }
+        public bool ShowUnreviewedBadge => UnreviewedReportsCount > 0;
         
         [Reactive] public bool ShowSearch { get; set; } = true;
         [Reactive] public bool ShowBrowseCatalog { get; set; } = true;
@@ -47,6 +52,8 @@ namespace GameLibraryManager.ViewModels
         public ReactiveCommand<Unit, Unit> NavigateToLogCommand { get; }
         public ReactiveCommand<Unit, Unit> NavigateToUserManagementCommand { get; }
         public ReactiveCommand<Unit, Unit> NavigateToGameManagementCommand { get; }
+        public ReactiveCommand<Unit, Unit> NavigateToReportsCommand { get; }
+        public ReactiveCommand<Unit, Unit> NavigateToReportsManagementCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenProfileSettingsCommand { get; }
         public ReactiveCommand<Unit, Unit> LogoutCommand { get; }
         public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
@@ -67,6 +74,8 @@ namespace GameLibraryManager.ViewModels
             NavigateToUserManagementCommand = ReactiveCommand.Create(NavigateToUserManagement);
             NavigateToGameManagementCommand = ReactiveCommand.Create(NavigateToGameManagement);
             NavigateToLogCommand = ReactiveCommand.Create(NavigateToLog);
+            NavigateToReportsCommand = ReactiveCommand.Create(NavigateToReports);
+            NavigateToReportsManagementCommand = ReactiveCommand.Create(NavigateToReportsManagement);
             OpenProfileSettingsCommand = ReactiveCommand.Create(OpenProfileSettings);
             LogoutCommand = ReactiveCommand.Create(Logout);
             RefreshCommand = ReactiveCommand.Create(Refresh);
@@ -84,6 +93,22 @@ namespace GameLibraryManager.ViewModels
                 .Subscribe(_ => this.RaisePropertyChanged(nameof(WindowTitle)));
 
             NavigateToLibrary();
+            
+            if (IsAdmin)
+            {
+                Task.Run(async () =>
+                {
+                    await Task.Delay(500);
+                    var count = await _dbService.GetUnreviewedReportsCountAsync();
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        UnreviewedReportsCount = count;
+                        this.RaisePropertyChanged(nameof(ShowUnreviewedBadge));
+                    });
+                });
+            }
+            
+            _ = RefreshUnreviewedReportsCount();
         }
 
         private void ResetNavState()
@@ -93,6 +118,8 @@ namespace GameLibraryManager.ViewModels
             IsUserManagementActive = false;
             IsGameManagementActive = false;
             IsLogActive = false;
+            IsReportsActive = false;
+            IsReportsManagementActive = false;
         }
 
         private void ResetToolbar()
@@ -183,6 +210,49 @@ namespace GameLibraryManager.ViewModels
             ShowSearch = true;
         }
 
+        private void NavigateToReports()
+        {
+            CurrentViewModel = new ReportsViewModel(_sessionManager, _dbService);
+            CurrentTitle = "Reports & Suggestions";
+            CurrentSubtitle = "Submit feedback and report issues";
+            SearchWatermark = string.Empty;
+            
+            ResetNavState();
+            IsReportsActive = true;
+            
+            ResetToolbar();
+        }
+
+        private void NavigateToReportsManagement()
+        {
+            var vm = new ReportsManagementViewModel(_sessionManager, _dbService);
+            CurrentViewModel = vm;
+            CurrentTitle = "Reports";
+            CurrentSubtitle = "Review and manage user reports and suggestions";
+            SearchWatermark = string.Empty;
+            
+            ResetNavState();
+            IsReportsManagementActive = true;
+            
+            ResetToolbar();
+            
+            vm.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(ReportsManagementViewModel.UnreviewedCount))
+                {
+                    UnreviewedReportsCount = vm.UnreviewedCount;
+                    this.RaisePropertyChanged(nameof(ShowUnreviewedBadge));
+                }
+            };
+            
+            Task.Run(async () =>
+            {
+                await Task.Delay(500);
+                var count = await _dbService.GetUnreviewedReportsCountAsync();
+                Dispatcher.UIThread.Post(() => UnreviewedReportsCount = count);
+            });
+        }
+
         private void NavigateToGameDetails(int gameId)
         {
             var vm = new GameDetailsViewModel(_sessionManager, _dbService, gameId, NavigateBack);
@@ -221,6 +291,27 @@ namespace GameLibraryManager.ViewModels
             NavigateToLibrary();
         }
 
+        public async Task RefreshUnreviewedReportsCount()
+        {
+            if (IsAdmin)
+            {
+                var count = await _dbService.GetUnreviewedReportsCountAsync();
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    UnreviewedReportsCount = count;
+                    this.RaisePropertyChanged(nameof(ShowUnreviewedBadge));
+                });
+            }
+            else
+            {
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    UnreviewedReportsCount = 0;
+                    this.RaisePropertyChanged(nameof(ShowUnreviewedBadge));
+                });
+            }
+        }
+
         private void Refresh()
         {
             if (CurrentViewModel is LibraryViewModel libraryVm)
@@ -238,6 +329,15 @@ namespace GameLibraryManager.ViewModels
             else if (CurrentViewModel is GameManagementViewModel gameVm)
             {
                 gameVm.LoadGamesCommand.Execute().Subscribe();
+            }
+            else if (CurrentViewModel is ReportsManagementViewModel reportsMgtVm)
+            {
+                reportsMgtVm.LoadReportsCommand.Execute().Subscribe();
+            }
+            
+            if (IsAdmin)
+            {
+                _ = RefreshUnreviewedReportsCount();
             }
         }
 

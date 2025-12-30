@@ -146,6 +146,19 @@ namespace GameLibraryManager.Services
             }
         }
 
+        public async Task<bool> ValidateUserSessionAsync(string email, string passwordHash)
+        {
+            try
+            {
+                var user = await AuthenticateUserAsync(email, passwordHash);
+                return user != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public async Task<User?> AuthenticateUserAsync(string email, string passwordHash)
         {
             try

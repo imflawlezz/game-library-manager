@@ -32,36 +32,55 @@ namespace GameLibraryManager.Services
             }
 
             var baseDir = AppContext.BaseDirectory;
+            var currentDir = Directory.GetCurrentDirectory();
+            var executablePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            var executableDir = !string.IsNullOrEmpty(executablePath) ? Path.GetDirectoryName(executablePath) : null;
+            
+            var appBundleResources = Path.Combine(baseDir, "..", "Resources");
+            var appBundleResourcesResolved = Path.GetFullPath(appBundleResources);
+            
             var candidatePaths = new[]
             {
+                Path.Combine(currentDir, ".env"),
                 Path.Combine(baseDir, ".env"),
+                executableDir != null ? Path.Combine(executableDir, ".env") : null,
+                File.Exists(appBundleResourcesResolved) ? Path.Combine(appBundleResourcesResolved, ".env") : null,
                 Path.Combine(baseDir, "..", "..", "..", ".env"),
                 Path.Combine(baseDir, "..", "..", "..", "..", ".env"),
-                Path.Combine(Directory.GetCurrentDirectory(), ".env")
+                Path.Combine(baseDir, "..", "..", "..", "..", "..", ".env"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".env"),
             };
 
             foreach (var envPath in candidatePaths)
             {
-                if (!File.Exists(envPath))
+                if (string.IsNullOrEmpty(envPath) || !File.Exists(envPath))
                 {
                     continue;
                 }
 
-                foreach (var line in File.ReadAllLines(envPath))
+                try
                 {
-                    if (string.IsNullOrWhiteSpace(line) || line.TrimStart().StartsWith("#"))
+                    foreach (var line in File.ReadAllLines(envPath))
                     {
-                        continue;
+                        if (string.IsNullOrWhiteSpace(line) || line.TrimStart().StartsWith("#"))
+                        {
+                            continue;
+                        }
+
+                        var parsed = ParseEnvLine(line);
+                        if (parsed is { Key: { Length: >0 } key, Value: var value })
+                        {
+                            Environment.SetEnvironmentVariable(key, value);
+                        }
                     }
 
-                    var parsed = ParseEnvLine(line);
-                    if (parsed is { Key: { Length: >0 } key, Value: var value })
-                    {
-                        Environment.SetEnvironmentVariable(key, value);
-                    }
+                    _envLoaded = true;
+                    break;
                 }
-
-                break;
+                catch
+                {
+                    continue;
+                }
             }
 
             _envLoaded = true;

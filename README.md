@@ -142,7 +142,7 @@ Non-clustered indexes are created on frequently queried columns including email,
    - `06_SeedData.sql` (optional, adds sample data)
 
 ### Configuration
-1. Create a `.env` file in the project root or configure the connection string:
+1. Create a `.env` file with your database connection string:
    ```
    DB_CONNECTION_STRING=Server=localhost,1433;Database=GameLibraryDB;User Id=sa;Password=YourPassword;Integrated Security=false;TrustServerCertificate=true;
    ```

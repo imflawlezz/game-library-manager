@@ -1048,6 +1048,228 @@ namespace GameLibraryManager.Services
 
             return entries;
         }
+
+        public async Task<int> CreateReportAsync(int userId, string type, string title, string content)
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                using var command = new SqlCommand("sp_CreateReport", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@UserID", userId);
+                command.Parameters.AddWithValue("@Type", type);
+                command.Parameters.AddWithValue("@Title", title);
+                command.Parameters.AddWithValue("@Content", content);
+                
+                var reportIdParam = new SqlParameter("@ReportID", SqlDbType.Int)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                command.Parameters.Add(reportIdParam);
+
+                try
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+                catch (Microsoft.Data.SqlClient.SqlException sqlEx)
+                {
+                    throw new Exception($"Database error during report creation: {sqlEx.Message} (Error Number: {sqlEx.Number})", sqlEx);
+                }
+
+                var reportId = reportIdParam.Value != DBNull.Value ? (int)reportIdParam.Value : 0;
+                
+                if (reportId == 0)
+                {
+                    throw new Exception("Report creation failed. The stored procedure returned 0. This usually means:\n" +
+                        "1. The Type must be exactly 'Report' or 'Suggestion' (case-sensitive)\n" +
+                        "2. The UserID must exist in the Users table\n" +
+                        "3. All required fields must be provided\n" +
+                        "4. Check database constraints and foreign keys");
+                }
+                
+                return reportId;
+            }
+            catch (Microsoft.Data.SqlClient.SqlException sqlEx)
+            {
+                throw new Exception($"Database error: {sqlEx.Message} (Error Number: {sqlEx.Number})", sqlEx);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to create report: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<List<ReportSuggestion>> GetReportsAsync(string? status = null, string? type = null, int? userId = null)
+        {
+            var reports = new List<ReportSuggestion>();
+
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                using var command = new SqlCommand("sp_GetReports", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                if (!string.IsNullOrEmpty(status))
+                    command.Parameters.AddWithValue("@Status", status);
+                if (!string.IsNullOrEmpty(type))
+                    command.Parameters.AddWithValue("@Type", type);
+                if (userId.HasValue)
+                    command.Parameters.AddWithValue("@UserID", userId.Value);
+
+                using var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    var report = new ReportSuggestion
+                    {
+                        ReportID = reader.GetInt32("ReportID"),
+                        UserID = reader.GetInt32("UserID"),
+                        Type = reader.GetString("Type"),
+                        Title = reader.GetString("Title"),
+                        Content = reader.GetString("Content"),
+                        Status = reader.GetString("Status"),
+                        ReviewedBy = reader.IsDBNull("ReviewedBy") ? null : reader.GetInt32("ReviewedBy"),
+                        AdminNotes = reader.IsDBNull("AdminNotes") ? null : reader.GetString("AdminNotes"),
+                        CreatedAt = reader.GetDateTime("CreatedAt"),
+                        ReviewedAt = reader.IsDBNull("ReviewedAt") ? null : reader.GetDateTime("ReviewedAt"),
+                        CreatedByUsername = reader.GetString("CreatedByUsername"),
+                        CreatedByEmail = reader.IsDBNull("CreatedByEmail") ? null : reader.GetString("CreatedByEmail"),
+                        ReviewedByUsername = reader.IsDBNull("ReviewedByUsername") ? null : reader.GetString("ReviewedByUsername")
+                    };
+                    
+                    try
+                    {
+                        var createdByOrdinal = reader.GetOrdinal("CreatedByProfileImageURL");
+                        var createdByUrl = reader.IsDBNull(createdByOrdinal) ? null : reader.GetString(createdByOrdinal);
+                        report.CreatedByProfileImageURL = string.IsNullOrWhiteSpace(createdByUrl) ? null : createdByUrl.Trim();
+                    }
+                    catch
+                    {
+                        report.CreatedByProfileImageURL = null;
+                    }
+                    
+                    try
+                    {
+                        var reviewedByOrdinal = reader.GetOrdinal("ReviewedByProfileImageURL");
+                        var reviewedByUrl = reader.IsDBNull(reviewedByOrdinal) ? null : reader.GetString(reviewedByOrdinal);
+                        report.ReviewedByProfileImageURL = string.IsNullOrWhiteSpace(reviewedByUrl) ? null : reviewedByUrl.Trim();
+                    }
+                    catch
+                    {
+                        report.ReviewedByProfileImageURL = null;
+                    }
+                    
+                    reports.Add(report);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to get reports: {ex.Message}", ex);
+            }
+
+            return reports;
+        }
+
+        public async Task<int> GetUnreviewedReportsCountAsync()
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                using var command = new SqlCommand("sp_GetUnreviewedReportsCount", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                var countParam = new SqlParameter("@Count", SqlDbType.Int)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                command.Parameters.Add(countParam);
+
+                await command.ExecuteNonQueryAsync();
+
+                return (int)countParam.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to get unreviewed reports count: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<bool> ReviewReportAsync(int reportId, int reviewedBy, string status, string? adminNotes = null)
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                using var command = new SqlCommand("sp_ReviewReport", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@ReportID", reportId);
+                command.Parameters.AddWithValue("@ReviewedBy", reviewedBy);
+                command.Parameters.AddWithValue("@Status", status);
+                if (!string.IsNullOrEmpty(adminNotes))
+                    command.Parameters.AddWithValue("@AdminNotes", adminNotes);
+                
+                var successParam = new SqlParameter("@Success", SqlDbType.Bit)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                command.Parameters.Add(successParam);
+
+                await command.ExecuteNonQueryAsync();
+
+                return (bool)successParam.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to review report: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<bool> DeleteReportAsync(int reportId)
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                using var command = new SqlCommand("sp_DeleteReport", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@ReportID", reportId);
+                
+                var successParam = new SqlParameter("@Success", SqlDbType.Bit)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                command.Parameters.Add(successParam);
+
+                await command.ExecuteNonQueryAsync();
+
+                return (bool)successParam.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to delete report: {ex.Message}", ex);
+            }
+        }
+
     }
 }
 

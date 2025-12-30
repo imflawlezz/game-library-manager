@@ -3,6 +3,7 @@
              xmlns:vm="using:GameLibraryManager.ViewModels"
              xmlns:i="https://github.com/projektanker/icons.avalonia"
              xmlns:spinner="using:GameLibraryManager.Controls"
+             xmlns:controls="using:GameLibraryManager.Controls"
              x:Class="GameLibraryManager.Views.UserManagementView"
              x:DataType="vm:UserManagementViewModel">
     
@@ -162,17 +163,18 @@
                                                     CornerRadius="20"
                                                     Background="#58A6FF"
                                                     ClipToBounds="True">
-                                                <Panel>
+                                                <Grid>
                                                     <i:Icon Value="fa-solid fa-user" 
                                                             FontSize="18"
                                                             Foreground="#0D1117"
                                                             HorizontalAlignment="Center"
                                                             VerticalAlignment="Center"
                                                             IsVisible="{Binding ProfileImageURL, Converter={x:Static StringConverters.IsNullOrEmpty}}"/>
-                                                    <Image Source="{Binding ProfileImageURL, Converter={StaticResource ImageUrlConverter}}"
-                                                           Stretch="UniformToFill"
-                                                           IsVisible="{Binding ProfileImageURL, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
-                                                </Panel>
+                                                    <controls:AsyncImage Source="{Binding ProfileImageURL}"
+                                                                        HorizontalAlignment="Stretch"
+                                                                        VerticalAlignment="Stretch"
+                                                                        IsVisible="{Binding ProfileImageURL, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                                </Grid>
                                             </Border>
                                             <StackPanel VerticalAlignment="Center" Spacing="2">
                                                 <TextBlock Text="{Binding Username}"

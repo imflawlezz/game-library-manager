@@ -185,12 +185,34 @@
         </Border>
         
         
-        <TextBlock Text="v1.0.0"
+        <TextBlock Text="v1.1.0"
                    FontSize="11"
                    Foreground="{StaticResource TextSecondaryBrush}"
                    HorizontalAlignment="Right"
                    VerticalAlignment="Bottom"
                    Margin="16"/>
+        
+        <StackPanel HorizontalAlignment="Left"
+                    VerticalAlignment="Bottom"
+                    Spacing="4"
+                    Margin="16">
+            <StackPanel Orientation="Horizontal" 
+                        Spacing="4">
+                <TextBlock Text="Developed by "
+                           FontSize="11"
+                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                <Button Click="OpenGitHub"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Padding="0"
+                        Cursor="Hand">
+                    <TextBlock Text="imflawlezz"
+                               FontSize="11"
+                               Foreground="{StaticResource AccentPrimaryBrush}"
+                               TextDecorations="Underline"/>
+                </Button>
+            </StackPanel>
+        </StackPanel>
 
         
         <controls:NotificationToast/>

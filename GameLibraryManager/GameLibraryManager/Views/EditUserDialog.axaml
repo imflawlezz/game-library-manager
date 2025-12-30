@@ -181,6 +181,39 @@
                 </StackPanel>
             </StackPanel>
             
+            <Border Background="#21262D"
+                    CornerRadius="8"
+                    Padding="16"
+                    IsVisible="{Binding IsEditMode}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Library Management"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="#F0F6FC"/>
+                    <TextBlock Text="Export or import user's game library as XML"
+                               FontSize="12"
+                               Foreground="#8B949E"/>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Command="{Binding ExportUserLibraryCommand}"
+                                Classes="ghost"
+                                IsEnabled="{Binding !IsLoading}">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <i:Icon Value="fa-solid fa-download" FontSize="14"/>
+                                <TextBlock Text="Export Library" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding ImportUserLibraryCommand}"
+                                Classes="ghost"
+                                IsEnabled="{Binding !IsLoading}">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <i:Icon Value="fa-solid fa-upload" FontSize="14"/>
+                                <TextBlock Text="Import Library" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            
             <Border Background="#F8514920"
                     BorderBrush="#F85149"
                     BorderThickness="1"

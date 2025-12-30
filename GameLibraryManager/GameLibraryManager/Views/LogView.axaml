@@ -29,7 +29,7 @@
                               CanUserReorderColumns="False"
                               CanUserResizeColumns="True"
                               CanUserSortColumns="True"
-                              IsVisible="{Binding !IsLoading}">
+                                  IsVisible="{Binding !IsLoading}">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="ID" 
                                                     Width="70"
@@ -38,7 +38,7 @@
                                                     SortMemberPath="LogID"
                                                     MinWidth="60">
                                 <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
+                                <DataTemplate>
                                         <TextBlock Text="{Binding LogID}"
                                                    FontSize="12"
                                                    FontWeight="SemiBold"
@@ -59,8 +59,8 @@
                                         <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                             <i:Icon Value="fa-solid fa-clock" 
                                                     FontSize="11"
-                                                    Foreground="#6E7681"
-                                                    VerticalAlignment="Center"/>
+                                                       Foreground="#6E7681"
+                                                       VerticalAlignment="Center"/>
                                             <TextBlock Text="{Binding Timestamp, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}"
                                                        FontSize="12"
                                                        Foreground="#8B949E"
@@ -82,7 +82,7 @@
                                             <i:Icon Value="fa-solid fa-user" 
                                                     FontSize="11"
                                                     Foreground="#6E7681"
-                                                    VerticalAlignment="Center"/>
+                                                       VerticalAlignment="Center"/>
                                             <TextBlock Text="{Binding Username}"
                                                        FontSize="13"
                                                        Foreground="#C9D1D9"
@@ -152,9 +152,9 @@
                                     <DataTemplate>
                                         <TextBlock Text="{Binding FieldName}"
                                                    FontSize="12"
-                                                   Foreground="#8B949E"
+                                                       Foreground="#8B949E"
                                                    FontStyle="Italic"
-                                                   VerticalAlignment="Center"
+                                                       VerticalAlignment="Center"
                                                    TextTrimming="CharacterEllipsis"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>

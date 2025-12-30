@@ -146,7 +146,7 @@
                                                 <Setter Property="Background" Value="#21262D"/>
                                             </Style>
                                         </Border.Styles>
-                                        <Grid ColumnDefinitions="60,2*,*,140,140,100">
+                                        <Grid ColumnDefinitions="60,2*,*,140,140,140">
                                         
                                         
                                         <TextBlock Grid.Column="0"
@@ -245,7 +245,6 @@
                                                         FontSize="14"
                                                         Foreground="#58A6FF"/>
                                             </Button>
-                                            
                                             
                                             <Button Classes="icon"
                                                     Command="{Binding $parent[ItemsControl].((vm:UserManagementViewModel)DataContext).DeleteUserCommand}"

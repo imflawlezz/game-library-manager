@@ -395,10 +395,18 @@
             </Border>
             
             
-            <Border Grid.Row="1" 
-                    Background="{StaticResource BackgroundDarkBrush}"
-                    Padding="24">
-                <ContentControl Content="{Binding CurrentViewModel}">
+            <Grid Grid.Row="1">
+                <Border Opacity="0.3">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                            <GradientStop Color="{StaticResource AccentPrimary}" Offset="0"/>
+                            <GradientStop Color="{StaticResource BackgroundDark}" Offset="0.5"/>
+                            <GradientStop Color="{StaticResource AccentPurple}" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+                <ContentControl Content="{Binding CurrentViewModel}"
+                                Padding="24">
                     <ContentControl.DataTemplates>
                         <DataTemplate DataType="vm:ReportsViewModel">
                             <views:ReportsView/>
@@ -430,7 +438,7 @@
                         </DataTemplate>
                     </ContentControl.DataTemplates>
                 </ContentControl>
-            </Border>
+            </Grid>
         </Grid>
 
         <controls:NotificationToast Grid.ColumnSpan="2"/>

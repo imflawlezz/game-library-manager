@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using ReactiveUI;
 using GameLibraryManager.Models;
@@ -253,8 +255,6 @@ namespace GameLibraryManager.ViewModels
                 IsLoading = false;
             }
         }
-
-
 
         private Window? GetParentWindow()
         {

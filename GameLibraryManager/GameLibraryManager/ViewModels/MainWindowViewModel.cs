@@ -63,6 +63,10 @@ namespace GameLibraryManager.ViewModels
         public ReactiveCommand<Unit, Unit> SaveGameDetailsCommand { get; }
         public ReactiveCommand<Unit, Unit> AddToLibraryFromDetailsCommand { get; }
         public ReactiveCommand<Unit, Unit> RemoveFromLibraryCommand { get; }
+        public ReactiveCommand<Unit, Unit> ExportLibraryCommand { get; }
+        public ReactiveCommand<Unit, Unit> ImportLibraryCommand { get; }
+        public ReactiveCommand<Unit, Unit> ExportGlobalLibraryCommand { get; }
+        public ReactiveCommand<Unit, Unit> ImportGlobalLibraryCommand { get; }
 
         public MainWindowViewModel(SessionManager sessionManager, DatabaseService dbService)
         {
@@ -85,11 +89,15 @@ namespace GameLibraryManager.ViewModels
             SaveGameDetailsCommand = ReactiveCommand.CreateFromTask(SaveGameDetails);
             AddToLibraryFromDetailsCommand = ReactiveCommand.CreateFromTask(AddToLibraryFromDetails);
             RemoveFromLibraryCommand = ReactiveCommand.CreateFromTask(RemoveFromLibrary);
+            ExportLibraryCommand = ReactiveCommand.CreateFromTask(ExportLibrary);
+            ImportLibraryCommand = ReactiveCommand.CreateFromTask(ImportLibrary);
+            ExportGlobalLibraryCommand = ReactiveCommand.CreateFromTask(ExportGlobalLibrary);
+            ImportGlobalLibraryCommand = ReactiveCommand.CreateFromTask(ImportGlobalLibrary);
 
             this.WhenAnyValue(x => x.SearchText)
                 .Subscribe(text => OnSearchTextChanged(text));
 
-            this.WhenAnyValue(x => x.CurrentTitle, x => x.CurrentUser.Username)
+            this.WhenAnyValue(x => x.CurrentTitle, x => x.CurrentUser)
                 .Subscribe(_ => this.RaisePropertyChanged(nameof(WindowTitle)));
 
             NavigateToLibrary();
@@ -431,6 +439,42 @@ namespace GameLibraryManager.ViewModels
                 {
                     IsInLibrary = vm.IsInLibrary;
                 });
+            }
+            await Task.CompletedTask;
+        }
+
+        private async Task ExportLibrary()
+        {
+            if (CurrentViewModel is LibraryViewModel libraryVm)
+            {
+                libraryVm.ExportLibraryCommand.Execute().Subscribe();
+            }
+            await Task.CompletedTask;
+        }
+
+        private async Task ImportLibrary()
+        {
+            if (CurrentViewModel is LibraryViewModel libraryVm)
+            {
+                libraryVm.ImportLibraryCommand.Execute().Subscribe();
+            }
+            await Task.CompletedTask;
+        }
+
+        private async Task ExportGlobalLibrary()
+        {
+            if (CurrentViewModel is GameManagementViewModel gameVm)
+            {
+                gameVm.ExportGlobalLibraryCommand.Execute().Subscribe();
+            }
+            await Task.CompletedTask;
+        }
+
+        private async Task ImportGlobalLibrary()
+        {
+            if (CurrentViewModel is GameManagementViewModel gameVm)
+            {
+                gameVm.ImportGlobalLibraryCommand.Execute().Subscribe();
             }
             await Task.CompletedTask;
         }

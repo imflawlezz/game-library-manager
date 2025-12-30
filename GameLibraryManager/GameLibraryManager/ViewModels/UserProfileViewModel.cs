@@ -1,6 +1,9 @@
 using System;
+using System.IO;
 using System.Reactive;
 using System.Threading.Tasks;
+using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using GameLibraryManager.Models;

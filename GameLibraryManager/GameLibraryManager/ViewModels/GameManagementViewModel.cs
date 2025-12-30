@@ -1,15 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using ReactiveUI;
 using GameLibraryManager.Models;
@@ -68,6 +71,8 @@ namespace GameLibraryManager.ViewModels
         public ReactiveCommand<Unit, Unit> AddGameCommand { get; }
         public ReactiveCommand<Game, Unit> EditGameCommand { get; }
         public ReactiveCommand<Game, Unit> DeleteGameCommand { get; }
+        public ReactiveCommand<Unit, Unit> ExportGlobalLibraryCommand { get; }
+        public ReactiveCommand<Unit, Unit> ImportGlobalLibraryCommand { get; }
 
         private CancellationTokenSource? _filterCancellation;
 
@@ -80,6 +85,8 @@ namespace GameLibraryManager.ViewModels
             AddGameCommand = ReactiveCommand.CreateFromTask(AddGameAsync);
             EditGameCommand = ReactiveCommand.CreateFromTask<Game>(EditGameAsync);
             DeleteGameCommand = ReactiveCommand.CreateFromTask<Game>(DeleteGameAsync);
+            ExportGlobalLibraryCommand = ReactiveCommand.CreateFromTask(ExportGlobalLibraryAsync);
+            ImportGlobalLibraryCommand = ReactiveCommand.CreateFromTask(ImportGlobalLibraryAsync);
 
             this.WhenAnyValue(x => x.SearchText)
                 .Throttle(TimeSpan.FromMilliseconds(200))
@@ -244,11 +251,135 @@ namespace GameLibraryManager.ViewModels
             }
         }
 
+        private async Task ExportGlobalLibraryAsync()
+        {
+            if (_sessionManager.CurrentUser == null) return;
 
+            try
+            {
+                IsLoading = true;
+
+                var xmlData = await Task.Run(() => _dbService.ExportGlobalGameLibraryToXMLAsync());
+
+                if (string.IsNullOrWhiteSpace(xmlData))
+                {
+                    NotificationService.ShowError("No game library data to export");
+                    return;
+                }
+
+                var topLevel = GetTopLevel();
+                if (topLevel == null) return;
+
+                var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+                {
+                    Title = "Export Game Library",
+                    SuggestedFileName = $"game_library_export_{DateTime.Now:yyyyMMdd_HHmmss}.xml",
+                    DefaultExtension = "xml",
+                    FileTypeChoices = new[]
+                    {
+                        FilePickerFileTypes.All,
+                        new FilePickerFileType("XML Files") { Patterns = new[] { "*.xml" } }
+                    }
+                });
+
+                if (file != null)
+                {
+                    try
+                    {
+                        var xmlDoc = XDocument.Parse(xmlData);
+                        var formattedXml = xmlDoc.ToString();
+                        
+                        await using var stream = await file.OpenWriteAsync();
+                        using var writer = new StreamWriter(stream);
+                        await writer.WriteAsync(formattedXml);
+                        await writer.FlushAsync();
+
+                        NotificationService.ShowSuccess("Game library exported successfully!");
+                    }
+                    catch (System.Xml.XmlException xmlEx)
+                    {
+                        NotificationService.ShowError($"Invalid XML format: {xmlEx.Message}. Raw data length: {xmlData?.Length ?? 0}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                NotificationService.ShowError($"Failed to export game library: {ex.Message}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        private async Task ImportGlobalLibraryAsync()
+        {
+            if (_sessionManager.CurrentUser == null) return;
+
+            try
+            {
+                var topLevel = GetTopLevel();
+                if (topLevel == null) return;
+
+                var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+                {
+                    Title = "Import Game Library",
+                    AllowMultiple = false,
+                    FileTypeFilter = new[]
+                    {
+                        FilePickerFileTypes.All,
+                        new FilePickerFileType("XML Files") { Patterns = new[] { "*.xml" } }
+                    }
+                });
+
+                if (files.Count == 0) return;
+
+                var file = files[0];
+                await using var stream = await file.OpenReadAsync();
+                using var reader = new StreamReader(stream);
+                var xmlData = await reader.ReadToEndAsync();
+
+                if (string.IsNullOrWhiteSpace(xmlData))
+                {
+                    NotificationService.ShowError("The selected file is empty");
+                    return;
+                }
+
+                IsLoading = true;
+
+                var success = await Task.Run(() => 
+                    _dbService.ImportGlobalGameLibraryFromXMLAsync(xmlData, _sessionManager.CurrentUser.UserID));
+
+                if (success)
+                {
+                    NotificationService.ShowSuccess("Game library imported successfully!");
+                    await LoadGamesAsync();
+                }
+                else
+                {
+                    NotificationService.ShowError("Failed to import game library");
+                }
+            }
+            catch (Exception ex)
+            {
+                NotificationService.ShowError($"Failed to import game library: {ex.Message}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        private Avalonia.Controls.TopLevel? GetTopLevel()
+        {
+            return Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
+                ? desktop.MainWindow
+                : null;
+        }
 
         private Window? GetParentWindow()
         {
-            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 return desktop.MainWindow;
             }

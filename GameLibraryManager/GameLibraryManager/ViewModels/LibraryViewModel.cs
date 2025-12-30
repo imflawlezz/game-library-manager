@@ -1,12 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using ReactiveUI;
 using GameLibraryManager.Models;
@@ -130,6 +135,8 @@ namespace GameLibraryManager.ViewModels
         public ReactiveCommand<UserGame, Unit> ViewGameDetailsCommand { get; }
         public ReactiveCommand<UserGame, Unit> OpenGameDetailsCommand { get; }
         public ReactiveCommand<UserGame, Unit> RemoveGameCommand { get; }
+        public ReactiveCommand<Unit, Unit> ExportLibraryCommand { get; }
+        public ReactiveCommand<Unit, Unit> ImportLibraryCommand { get; }
 
         private readonly Action<int> _openGameDetails;
 
@@ -145,6 +152,8 @@ namespace GameLibraryManager.ViewModels
             LoadGamesCommand = LoadLibraryCommand;
             ViewGameDetailsCommand = ReactiveCommand.Create<UserGame>(ViewGameDetails);
             OpenGameDetailsCommand = ReactiveCommand.Create<UserGame>(OpenGameDetails);
+            ExportLibraryCommand = ReactiveCommand.CreateFromTask(ExportLibraryAsync);
+            ImportLibraryCommand = ReactiveCommand.CreateFromTask(ImportLibraryAsync);
             RemoveGameCommand = ReactiveCommand.CreateFromTask<UserGame>(RemoveGameAsync);
 
             this.WhenAnyValue(x => x.SearchText)
@@ -300,6 +309,124 @@ namespace GameLibraryManager.ViewModels
                     IsLoading = false;
                 });
             }
+        }
+
+        private async Task ExportLibraryAsync()
+        {
+            if (_sessionManager.CurrentUser == null) return;
+
+            try
+            {
+                IsLoading = true;
+
+                var xmlData = await Task.Run(() => _dbService.ExportUserLibraryToXMLAsync(_sessionManager.CurrentUser.UserID));
+
+                if (string.IsNullOrEmpty(xmlData))
+                {
+                    NotificationService.ShowError("No library data to export");
+                    return;
+                }
+
+                var topLevel = GetTopLevel();
+                if (topLevel == null) return;
+
+                var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+                {
+                    Title = "Export Library",
+                    SuggestedFileName = $"library_export_{DateTime.Now:yyyyMMdd_HHmmss}.xml",
+                    DefaultExtension = "xml",
+                    FileTypeChoices = new[]
+                    {
+                        FilePickerFileTypes.All,
+                        new FilePickerFileType("XML Files") { Patterns = new[] { "*.xml" } }
+                    }
+                });
+
+                if (file != null)
+                {
+                    var xmlDoc = XDocument.Parse(xmlData);
+                    var formattedXml = xmlDoc.ToString();
+                    
+                    await using var stream = await file.OpenWriteAsync();
+                    using var writer = new StreamWriter(stream);
+                    await writer.WriteAsync(formattedXml);
+                    await writer.FlushAsync();
+
+                    NotificationService.ShowSuccess("Library exported successfully!");
+                }
+            }
+            catch (Exception ex)
+            {
+                NotificationService.ShowError($"Failed to export library: {ex.Message}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        private async Task ImportLibraryAsync()
+        {
+            if (_sessionManager.CurrentUser == null) return;
+
+            try
+            {
+                var topLevel = GetTopLevel();
+                if (topLevel == null) return;
+
+                var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+                {
+                    Title = "Import Library",
+                    AllowMultiple = false,
+                    FileTypeFilter = new[]
+                    {
+                        FilePickerFileTypes.All,
+                        new FilePickerFileType("XML Files") { Patterns = new[] { "*.xml" } }
+                    }
+                });
+
+                if (files.Count == 0) return;
+
+                var file = files[0];
+                await using var stream = await file.OpenReadAsync();
+                using var reader = new StreamReader(stream);
+                var xmlData = await reader.ReadToEndAsync();
+
+                if (string.IsNullOrWhiteSpace(xmlData))
+                {
+                    NotificationService.ShowError("The selected file is empty");
+                    return;
+                }
+
+                IsLoading = true;
+
+                var success = await Task.Run(() => _dbService.ImportUserLibraryFromXMLAsync(_sessionManager.CurrentUser.UserID, xmlData));
+
+                if (success)
+                {
+                    NotificationService.ShowSuccess("Library imported successfully!");
+                    await LoadLibraryAsync();
+                }
+                else
+                {
+                    NotificationService.ShowError("Failed to import library");
+                }
+            }
+            catch (Exception ex)
+            {
+                NotificationService.ShowError($"Failed to import library: {ex.Message}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        private Avalonia.Controls.TopLevel? GetTopLevel()
+        {
+            return Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
+                ? desktop.MainWindow
+                : null;
         }
     }
 }

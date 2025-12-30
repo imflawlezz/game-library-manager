@@ -28,41 +28,142 @@
                               RowBackground="Transparent"
                               CanUserReorderColumns="False"
                               CanUserResizeColumns="True"
+                              CanUserSortColumns="True"
                               IsVisible="{Binding !IsLoading}">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID" 
-                                                Binding="{Binding LogID}" 
-                                                Width="80"
-                                                CanUserResize="True"
-                                                MinWidth="60"/>
-                            <DataGridTextColumn Header="Timestamp" 
-                                                Binding="{Binding Timestamp, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}" 
-                                                Width="140"
-                                                CanUserResize="True"
-                                                MinWidth="100"/>
-                            <DataGridTextColumn Header="User" 
-                                                Binding="{Binding Username}" 
-                                                Width="120"
-                                                CanUserResize="True"
-                                                MinWidth="80"/>
-                            <DataGridTextColumn Header="Table" 
-                                                Binding="{Binding TableName}" 
-                                                Width="100"
-                                                CanUserResize="True"
-                                                MinWidth="80"/>
-                            <DataGridTextColumn Header="Action" 
-                                                Binding="{Binding Action}" 
-                                                Width="100"
-                                                CanUserResize="True"
-                                                MinWidth="80"/>
-                            <DataGridTextColumn Header="Field" 
-                                                Binding="{Binding FieldName}" 
-                                                Width="200"
-                                                CanUserResize="True"
-                                                MinWidth="100"/>
+                            <DataGridTemplateColumn Header="ID" 
+                                                    Width="70"
+                                                    CanUserResize="True"
+                                                    CanUserSort="True"
+                                                    SortMemberPath="LogID"
+                                                    MinWidth="60">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding LogID}"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#6E7681"
+                                                   VerticalAlignment="Center"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            
+                            <DataGridTemplateColumn Header="Timestamp" 
+                                                    Width="150"
+                                                    CanUserResize="True"
+                                                    CanUserSort="True"
+                                                    SortMemberPath="Timestamp"
+                                                    MinWidth="120">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <i:Icon Value="fa-solid fa-clock" 
+                                                    FontSize="11"
+                                                    Foreground="#6E7681"
+                                                    VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding Timestamp, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}"
+                                                       FontSize="12"
+                                                       Foreground="#8B949E"
+                                                       VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            
+                            <DataGridTemplateColumn Header="User" 
+                                                    Width="130"
+                                                    CanUserResize="True"
+                                                    CanUserSort="True"
+                                                    SortMemberPath="Username"
+                                                    MinWidth="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <i:Icon Value="fa-solid fa-user" 
+                                                    FontSize="11"
+                                                    Foreground="#6E7681"
+                                                    VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding Username}"
+                                                       FontSize="13"
+                                                       Foreground="#C9D1D9"
+                                                       FontWeight="Medium"
+                                                       VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            
+                            <DataGridTemplateColumn Header="Table" 
+                                                    Width="110"
+                                                    CanUserResize="True"
+                                                    CanUserSort="True"
+                                                    SortMemberPath="TableName"
+                                                    MinWidth="90">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding TableName}"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.Foreground>
+                                                <SolidColorBrush Color="{Binding TableName, Converter={StaticResource TableNameColorConverter}}"/>
+                                            </TextBlock.Foreground>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            
+                            <DataGridTemplateColumn Header="Action" 
+                                                    Width="120"
+                                                    CanUserResize="True"
+                                                    CanUserSort="True"
+                                                    SortMemberPath="Action"
+                                                    MinWidth="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <i:Icon Value="{Binding Action, Converter={StaticResource ActionIconConverter}}" 
+                                                    FontSize="12"
+                                                    VerticalAlignment="Center">
+                                                <i:Icon.Foreground>
+                                                    <SolidColorBrush Color="{Binding Action, Converter={StaticResource ActionColorConverter}}"/>
+                                                </i:Icon.Foreground>
+                                            </i:Icon>
+                                            <TextBlock Text="{Binding Action}"
+                                                       FontSize="12"
+                                                       FontWeight="SemiBold"
+                                                       VerticalAlignment="Center">
+                                                <TextBlock.Foreground>
+                                                    <SolidColorBrush Color="{Binding Action, Converter={StaticResource ActionColorConverter}}"/>
+                                                </TextBlock.Foreground>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            
+                            <DataGridTemplateColumn Header="Field" 
+                                                    Width="180"
+                                                    CanUserResize="True"
+                                                    CanUserSort="True"
+                                                    SortMemberPath="FieldName"
+                                                    MinWidth="120">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding FieldName}"
+                                                   FontSize="12"
+                                                   Foreground="#8B949E"
+                                                   FontStyle="Italic"
+                                                   VerticalAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                             <DataGridTemplateColumn Header="Old Value" 
                                                      Width="200"
                                                      CanUserResize="True"
+                                                     CanUserSort="True"
+                                                     SortMemberPath="OldValue"
                                                      MinWidth="150">
                                 <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -75,7 +176,7 @@
                                                            Foreground="#8B949E"
                                                            VerticalAlignment="Center"
                                                            TextTrimming="CharacterEllipsis"
-                                                       TextWrapping="NoWrap"
+                                                           TextWrapping="NoWrap"
                                                            MaxWidth="160"/>
                                             <Button Command="{Binding $parent[DataGrid].DataContext.CopyToClipboardCommand}"
                                                         CommandParameter="{Binding OldValue}"
@@ -100,6 +201,8 @@
                             <DataGridTemplateColumn Header="New Value" 
                                                      Width="200"
                                                      CanUserResize="True"
+                                                     CanUserSort="True"
+                                                     SortMemberPath="NewValue"
                                                      MinWidth="150">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -112,7 +215,7 @@
                                                            Foreground="#F0F6FC"
                                                            VerticalAlignment="Center"
                                                            TextTrimming="CharacterEllipsis"
-                                                       TextWrapping="NoWrap"
+                                                           TextWrapping="NoWrap"
                                                            MaxWidth="160"/>
                                             <Button Command="{Binding $parent[DataGrid].DataContext.CopyToClipboardCommand}"
                                                         CommandParameter="{Binding NewValue}"

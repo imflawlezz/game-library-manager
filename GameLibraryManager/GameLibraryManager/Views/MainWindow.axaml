@@ -85,6 +85,16 @@
                             </StackPanel>
                         </Button>
                         
+                        <Button Command="{Binding NavigateToReportsCommand}"
+                                Classes="sidebar"
+                                Classes.active="{Binding IsReportsActive}"
+                                HorizontalAlignment="Stretch">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <i:Icon Value="fa-solid fa-message" FontSize="16" Width="20"/>
+                                <TextBlock Text="Give Feedback" VerticalAlignment="Center" FontWeight="Medium"/>
+                            </StackPanel>
+                        </Button>
+                        
                         
                         <StackPanel IsVisible="{Binding IsAdmin}" Margin="0,20,0,0">
                             <TextBlock Text="ADMINISTRATION"
@@ -121,6 +131,35 @@
                                     <i:Icon Value="fa-solid fa-file-lines" FontSize="16" Width="20"/>
                                     <TextBlock Text="Audit Log" VerticalAlignment="Center" FontWeight="Medium"/>
                                 </StackPanel>
+                            </Button>
+                            
+                            <Button Command="{Binding NavigateToReportsManagementCommand}"
+                                    Classes="sidebar"
+                                    Classes.active="{Binding IsReportsManagementActive}"
+                                    HorizontalAlignment="Stretch">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+                                        <i:Icon Value="fa-solid fa-clipboard-list" FontSize="16" Width="20"/>
+                                        <TextBlock Text="Reports" VerticalAlignment="Center" FontWeight="Medium"/>
+                                    </StackPanel>
+                                    <Border Grid.Column="2"
+                                            Background="#A371F7"
+                                            CornerRadius="10"
+                                            Padding="5,2"
+                                            MinWidth="18"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            Margin="8,0,0,0"
+                                            IsVisible="{Binding ShowUnreviewedBadge}">
+                                        <TextBlock Text="{Binding UnreviewedReportsCount}"
+                                                   FontSize="10"
+                                                   FontWeight="Bold"
+                                                   Foreground="#FFFFFF"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   TextAlignment="Center"/>
+                                    </Border>
+                                </Grid>
                             </Button>
                         </StackPanel>
                     </StackPanel>
@@ -361,6 +400,12 @@
                     Padding="24">
                 <ContentControl Content="{Binding CurrentViewModel}">
                     <ContentControl.DataTemplates>
+                        <DataTemplate DataType="vm:ReportsViewModel">
+                            <views:ReportsView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="vm:ReportsManagementViewModel">
+                            <views:ReportsManagementView/>
+                        </DataTemplate>
                         <DataTemplate DataType="vm:LibraryViewModel">
                             <views:LibraryView/>
                         </DataTemplate>

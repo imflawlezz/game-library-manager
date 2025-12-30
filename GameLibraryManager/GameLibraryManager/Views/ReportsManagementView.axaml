@@ -1,0 +1,253 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GameLibraryManager.ViewModels"
+             xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:spinner="using:GameLibraryManager.Controls"
+             xmlns:controls="using:GameLibraryManager.Controls"
+             xmlns:converters="using:GameLibraryManager.Converters"
+             x:Class="GameLibraryManager.Views.ReportsManagementView"
+             x:DataType="vm:ReportsManagementViewModel">
+    
+    <Grid RowDefinitions="*">
+        
+        <Border Grid.Row="0"
+                Background="#161B22"
+                CornerRadius="12"
+                BorderBrush="#30363D"
+                BorderThickness="1"
+                ClipToBounds="True">
+            <Grid RowDefinitions="Auto,*">
+                
+                <Border Grid.Row="0"
+                        Background="#21262D"
+                        Padding="24,20"
+                        BorderBrush="#30363D"
+                        BorderThickness="0,0,0,1">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <StackPanel Grid.Column="0"
+                                    Orientation="Horizontal"
+                                    Spacing="0">
+                            <Button Command="{Binding SwitchViewCommand}"
+                                    CommandParameter="Unreviewed"
+                                    Padding="20,12"
+                                    MinWidth="160"
+                                    HorizontalContentAlignment="Center"
+                                    BorderThickness="0,0,0,3"
+                                    Background="Transparent"
+                                    CornerRadius="0">
+                                <Button.Styles>
+                                    <Style Selector="Button">
+                                        <Setter Property="BorderThickness" Value="0,0,0,3"/>
+                                    </Style>
+                                    <Style Selector="Button:pointerover">
+                                        <Setter Property="Background" Value="#161B22"/>
+                                    </Style>
+                                </Button.Styles>
+                                <Button.Foreground>
+                                    <Binding Path="IsUnreviewedSelected" Converter="{StaticResource BoolToSelectedForegroundConverter}"/>
+                                </Button.Foreground>
+                                <Button.BorderBrush>
+                                    <Binding Path="IsUnreviewedSelected" Converter="{StaticResource BoolToSelectedBackgroundConverter}"/>
+                                </Button.BorderBrush>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <i:Icon Value="fa-solid fa-exclamation-circle" 
+                                            FontSize="14"/>
+                                    <TextBlock Text="Unreviewed"
+                                               FontWeight="Medium"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding SwitchViewCommand}"
+                                    CommandParameter="Reviewed"
+                                    Padding="20,12"
+                                    MinWidth="160"
+                                    HorizontalContentAlignment="Center"
+                                    BorderThickness="0,0,0,3"
+                                    Background="Transparent"
+                                    CornerRadius="0">
+                                <Button.Styles>
+                                    <Style Selector="Button">
+                                        <Setter Property="BorderThickness" Value="0,0,0,3"/>
+                                    </Style>
+                                    <Style Selector="Button:pointerover">
+                                        <Setter Property="Background" Value="#161B22"/>
+                                    </Style>
+                                </Button.Styles>
+                                <Button.Foreground>
+                                    <Binding Path="IsReviewedSelected" Converter="{StaticResource BoolToSelectedForegroundConverter}"/>
+                                </Button.Foreground>
+                                <Button.BorderBrush>
+                                    <Binding Path="IsReviewedSelected" Converter="{StaticResource BoolToSelectedBackgroundConverter}"/>
+                                </Button.BorderBrush>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <i:Icon Value="fa-solid fa-check-circle" 
+                                            FontSize="14"/>
+                                    <TextBlock Text="Reviewed"
+                                               FontWeight="Medium"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                        <TextBlock Grid.Column="2"
+                                   Text="{Binding CurrentReports.Count, StringFormat='{}{0} total'}"
+                                   FontSize="13"
+                                   Foreground="#8B949E"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+                
+                <Grid Grid.Row="1">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  Margin="20"
+                                  IsVisible="{Binding ShowContent}">
+                        <ItemsControl ItemsSource="{Binding CurrentReports}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Padding="16,14"
+                                            Margin="0,0,0,12"
+                                            Background="#21262D"
+                                            CornerRadius="8"
+                                            BorderBrush="#30363D"
+                                            BorderThickness="1">
+                                        <Border.Styles>
+                                            <Style Selector="Border:pointerover">
+                                                <Setter Property="Background" Value="#1A1F28"/>
+                                                <Setter Property="BorderBrush" Value="#58A6FF"/>
+                                            </Style>
+                                        </Border.Styles>
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Grid.Column="0" Spacing="6">
+                                                <TextBlock Text="{Binding Title}"
+                                                           FontSize="15"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="#F0F6FC"
+                                                           TextWrapping="Wrap"/>
+                                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Type}"
+                                                               FontSize="12"
+                                                               Foreground="#8B949E"
+                                                               VerticalAlignment="Center"/>
+                                                    <TextBlock Text="by"
+                                                               FontSize="12"
+                                                               Foreground="#6E7681"
+                                                               VerticalAlignment="Center"/>
+                                                    <i:Icon Value="fa-solid fa-user" 
+                                                            FontSize="11"
+                                                            Foreground="#6E7681"
+                                                            VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding CreatedByUsername}"
+                                                               FontSize="12"
+                                                               Foreground="#8B949E"
+                                                               VerticalAlignment="Center"/>
+                                                    <TextBlock Text="•"
+                                                               FontSize="12"
+                                                               Foreground="#6E7681"
+                                                               Margin="4,0,4,0"
+                                                               VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding CreatedAt, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}"
+                                                               FontSize="12"
+                                                               Foreground="#8B949E"
+                                                               VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal" 
+                                                            Spacing="6"
+                                                            IsVisible="{Binding ReviewedByUsername, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                            Margin="0,2,0,0"
+                                                            VerticalAlignment="Center">
+                                                    <i:Icon Value="{Binding Status, Converter={StaticResource StatusIconConverter}}" 
+                                                            FontSize="12"
+                                                            VerticalAlignment="Center">
+                                                        <i:Icon.Foreground>
+                                                            <SolidColorBrush Color="{Binding Status, Converter={StaticResource StatusColorConverter}}"/>
+                                                        </i:Icon.Foreground>
+                                                    </i:Icon>
+                                                    <TextBlock Text="{Binding Status}"
+                                                               FontSize="12"
+                                                               Foreground="#8B949E"
+                                                               VerticalAlignment="Center"/>
+                                                    <TextBlock Text="by"
+                                                               FontSize="12"
+                                                               Foreground="#6E7681"
+                                                               VerticalAlignment="Center"/>
+                                                    <i:Icon Value="fa-solid fa-user-check" 
+                                                            FontSize="11"
+                                                            Foreground="#6E7681"
+                                                            VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding ReviewedByUsername}"
+                                                               FontSize="12"
+                                                               Foreground="#8B949E"
+                                                               VerticalAlignment="Center"/>
+                                                    <TextBlock Text="•"
+                                                               FontSize="12"
+                                                               Foreground="#6E7681"
+                                                               Margin="4,0,4,0"
+                                                               VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding ReviewedAt, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}"
+                                                               FontSize="12"
+                                                               Foreground="#8B949E"
+                                                               VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" 
+                                                        Orientation="Horizontal" 
+                                                        Spacing="8">
+                                                <Button Command="{Binding $parent[ItemsControl].DataContext.ReviewReportCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        Classes="icon"
+                                                        Padding="10"
+                                                        ToolTip.Tip="Review"
+                                                        IsVisible="{Binding IsUnreviewed}">
+                                                    <i:Icon Value="fa-solid fa-eye" FontSize="14" Foreground="#58A6FF"/>
+                                                </Button>
+                                                <Button Command="{Binding $parent[ItemsControl].DataContext.ViewReportCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        Classes="icon"
+                                                        Padding="10"
+                                                        ToolTip.Tip="View Details"
+                                                        IsVisible="{Binding !IsUnreviewed}">
+                                                    <i:Icon Value="fa-solid fa-eye" FontSize="14" Foreground="#58A6FF"/>
+                                                </Button>
+                                                <Button Command="{Binding $parent[ItemsControl].DataContext.DeleteReportCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        Classes="icon"
+                                                        Padding="10"
+                                                        ToolTip.Tip="Delete">
+                                                    <i:Icon Value="fa-solid fa-trash" FontSize="14" Foreground="#F85149"/>
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                    
+                    <Border Background="#161B22"
+                            IsVisible="{Binding ShowEmptyState}"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Stretch">
+                        <StackPanel VerticalAlignment="Center" 
+                                    HorizontalAlignment="Center"
+                                    Spacing="16"
+                                    Margin="40">
+                            <i:Icon Value="fa-solid fa-clipboard-list" 
+                                    FontSize="48"
+                                    Foreground="#6E7681"/>
+                            <TextBlock Text="No reports found"
+                                       FontSize="16"
+                                       Foreground="#8B949E"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding SelectedView, StringFormat='There are no {0} reports at this time.'}"
+                                       FontSize="13"
+                                       Foreground="#6E7681"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <Border Background="#E00D1117"
+                            IsVisible="{Binding IsLoading}">
+                        <spinner:LoadingSpinner Text="Loading reports"/>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

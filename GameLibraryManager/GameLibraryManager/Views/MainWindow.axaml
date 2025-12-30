@@ -23,7 +23,7 @@
                 Background="{StaticResource BackgroundMediumBrush}"
                 BorderBrush="{StaticResource BorderDefaultBrush}"
                 BorderThickness="0,0,1,0">
-            <Grid RowDefinitions="Auto,*,Auto">
+            <Grid RowDefinitions="Auto,*,Auto,Auto">
                 
                 
                 <Border Grid.Row="0" 
@@ -167,6 +167,16 @@
                 
                 
                 <Border Grid.Row="2"
+                        Padding="12,8"
+                        HorizontalAlignment="Center">
+                    <TextBlock Text="v1.2.0"
+                               FontSize="11"
+                               Foreground="{StaticResource TextMuted}"
+                               Opacity="0.5"/>
+                </Border>
+                
+                
+                <Border Grid.Row="3"
                         Padding="12,14"
                         BorderBrush="{StaticResource BorderDefaultBrush}"
                         BorderThickness="0,1,0,0"

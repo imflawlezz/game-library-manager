@@ -185,7 +185,7 @@
         </Border>
         
         
-        <TextBlock Text="v1.1.0"
+        <TextBlock Text="v1.2.0"
                    FontSize="11"
                    Foreground="{StaticResource TextSecondaryBrush}"
                    HorizontalAlignment="Right"

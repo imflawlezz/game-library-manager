@@ -1358,5 +1358,270 @@ BEGIN
 END
 GO
 
+CREATE PROCEDURE sp_ExportUserLibraryToXML
+    @UserID INT,
+    @XMLOutput NVARCHAR(MAX) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    BEGIN TRY
+        DECLARE @XML XML;
+        
+        SET @XML = (
+            SELECT 
+                ug.GameID AS 'GameID',
+                ug.Status AS 'Status',
+                ug.PersonalRating AS 'PersonalRating',
+                ISNULL(ug.PersonalNotes, '') AS 'PersonalNotes',
+                ug.HoursPlayed AS 'HoursPlayed',
+                ug.DateAdded AS 'DateAdded',
+                ug.LastModified AS 'LastModified'
+            FROM UserGames ug
+            WHERE ug.UserID = @UserID
+            FOR XML PATH('Game'), ROOT('UserLibrary'), TYPE, ELEMENTS
+        );
+        
+        SET @XMLOutput = CAST(@XML AS NVARCHAR(MAX));
+        
+        RETURN 0
+    END TRY
+    BEGIN CATCH
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE()
+        DECLARE @ErrorSeverity INT = ERROR_SEVERITY()
+        DECLARE @ErrorState INT = ERROR_STATE()
+        
+        RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState)
+        RETURN -1
+    END CATCH
+END
+GO
+
+CREATE PROCEDURE sp_ImportUserLibraryFromXML
+    @UserID INT,
+    @XMLData NVARCHAR(MAX),
+    @Success BIT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @Success = 0;
+    
+    BEGIN TRY
+        BEGIN TRANSACTION
+        
+        DECLARE @XMLDoc XML = CAST(@XMLData AS XML)
+        
+        DECLARE @TempGames TABLE (
+            GameID INT,
+            Status NVARCHAR(50),
+            PersonalRating DECIMAL(3,1),
+            PersonalNotes NVARCHAR(MAX),
+            HoursPlayed DECIMAL(10,2),
+            DateAdded DATETIME,
+            LastModified DATETIME
+        )
+        
+        INSERT INTO @TempGames (GameID, Status, PersonalRating, PersonalNotes, HoursPlayed, DateAdded, LastModified)
+        SELECT 
+            x.value('(GameID/text())[1]', 'INT') AS GameID,
+            x.value('(Status/text())[1]', 'NVARCHAR(50)') AS Status,
+            x.value('(PersonalRating/text())[1]', 'DECIMAL(3,1)') AS PersonalRating,
+            x.value('(PersonalNotes/text())[1]', 'NVARCHAR(MAX)') AS PersonalNotes,
+            x.value('(HoursPlayed/text())[1]', 'DECIMAL(10,2)') AS HoursPlayed,
+            x.value('(DateAdded/text())[1]', 'DATETIME') AS DateAdded,
+            x.value('(LastModified/text())[1]', 'DATETIME') AS LastModified
+        FROM @XMLDoc.nodes('/UserLibrary/Game') AS t(x)
+        WHERE EXISTS (SELECT 1 FROM Games WHERE GameID = x.value('(GameID/text())[1]', 'INT'))
+        
+        DELETE FROM UserGames WHERE UserID = @UserID
+        
+        INSERT INTO UserGames (UserID, GameID, Status, PersonalRating, PersonalNotes, HoursPlayed, DateAdded, LastModified)
+        SELECT 
+            @UserID,
+            GameID,
+            Status,
+            PersonalRating,
+            PersonalNotes,
+            HoursPlayed,
+            ISNULL(DateAdded, GETDATE()),
+            ISNULL(LastModified, GETDATE())
+        FROM @TempGames
+        WHERE GameID IS NOT NULL
+        
+        SET @Success = 1
+        COMMIT TRANSACTION
+        RETURN 0
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION
+        
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE()
+        DECLARE @ErrorSeverity INT = ERROR_SEVERITY()
+        DECLARE @ErrorState INT = ERROR_STATE()
+        
+        RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState)
+        SET @Success = 0
+        RETURN -1
+    END CATCH
+END
+GO
+
+CREATE PROCEDURE sp_ExportGlobalGameLibraryToXML
+    @XMLOutput NVARCHAR(MAX) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    BEGIN TRY
+        DECLARE @XML XML;
+        
+        SET @XML = (
+            SELECT 
+                g.GameID AS 'GameID',
+                g.Title AS 'Title',
+                g.Developer AS 'Developer',
+                g.Publisher AS 'Publisher',
+                g.ReleaseYear AS 'ReleaseYear',
+                ISNULL(g.Description, '') AS 'Description',
+                ISNULL(g.CoverImageURL, '') AS 'CoverImageURL',
+                g.CreatedAt AS 'CreatedAt',
+                ISNULL(u.Username, '') AS 'CreatedByUsername',
+                (
+                    SELECT gen.GenreName AS 'GenreName'
+                    FROM GameGenres gg
+                    INNER JOIN Genres gen ON gg.GenreID = gen.GenreID
+                    WHERE gg.GameID = g.GameID
+                    FOR XML PATH('Genre'), TYPE, ELEMENTS
+                ) AS 'Genres',
+                (
+                    SELECT p.PlatformName AS 'PlatformName'
+                    FROM GamePlatforms gp
+                    INNER JOIN Platforms p ON gp.PlatformID = p.PlatformID
+                    WHERE gp.GameID = g.GameID
+                    FOR XML PATH('Platform'), TYPE, ELEMENTS
+                ) AS 'Platforms'
+            FROM Games g
+            LEFT JOIN Users u ON g.CreatedBy = u.UserID
+            ORDER BY g.Title
+            FOR XML PATH('Game'), ROOT('GameLibrary'), TYPE, ELEMENTS
+        );
+        
+        SET @XMLOutput = CAST(@XML AS NVARCHAR(MAX));
+        
+        RETURN 0
+    END TRY
+    BEGIN CATCH
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE()
+        DECLARE @ErrorSeverity INT = ERROR_SEVERITY()
+        DECLARE @ErrorState INT = ERROR_STATE()
+        
+        RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState)
+        RETURN -1
+    END CATCH
+END
+GO
+
+CREATE PROCEDURE sp_ImportGlobalGameLibraryFromXML
+    @XMLData NVARCHAR(MAX),
+    @CreatedBy INT,
+    @Success BIT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET @Success = 0;
+    
+    BEGIN TRY
+        BEGIN TRANSACTION
+        
+        DECLARE @XMLDoc XML = CAST(@XMLData AS XML)
+        
+        DECLARE @TempGames TABLE (
+            GameID INT,
+            Title NVARCHAR(255),
+            Developer NVARCHAR(255),
+            Publisher NVARCHAR(255),
+            ReleaseYear INT,
+            Description NVARCHAR(MAX),
+            CoverImageURL NVARCHAR(500),
+            CreatedAt DATETIME,
+            CreatedByUsername NVARCHAR(100),
+            Genres XML,
+            Platforms XML
+        )
+        
+        INSERT INTO @TempGames (GameID, Title, Developer, Publisher, ReleaseYear, Description, CoverImageURL, CreatedAt, CreatedByUsername, Genres, Platforms)
+        SELECT 
+            x.value('(GameID/text())[1]', 'INT') AS GameID,
+            x.value('(Title/text())[1]', 'NVARCHAR(255)') AS Title,
+            x.value('(Developer/text())[1]', 'NVARCHAR(255)') AS Developer,
+            x.value('(Publisher/text())[1]', 'NVARCHAR(255)') AS Publisher,
+            x.value('(ReleaseYear/text())[1]', 'INT') AS ReleaseYear,
+            x.value('(Description/text())[1]', 'NVARCHAR(MAX)') AS Description,
+            x.value('(CoverImageURL/text())[1]', 'NVARCHAR(500)') AS CoverImageURL,
+            x.value('(CreatedAt/text())[1]', 'DATETIME') AS CreatedAt,
+            x.value('(CreatedByUsername/text())[1]', 'NVARCHAR(100)') AS CreatedByUsername,
+            x.query('Genres') AS Genres,
+            x.query('Platforms') AS Platforms
+        FROM @XMLDoc.nodes('/GameLibrary/Game') AS t(x)
+        
+        SET IDENTITY_INSERT Games ON;
+        
+        MERGE Games AS target
+        USING @TempGames AS source
+        ON target.GameID = source.GameID
+        WHEN MATCHED THEN
+            UPDATE SET
+                Title = source.Title,
+                Developer = source.Developer,
+                Publisher = source.Publisher,
+                ReleaseYear = source.ReleaseYear,
+                Description = source.Description,
+                CoverImageURL = source.CoverImageURL
+        WHEN NOT MATCHED THEN
+            INSERT (GameID, Title, Developer, Publisher, ReleaseYear, Description, CoverImageURL, CreatedBy, CreatedAt)
+            VALUES (source.GameID, source.Title, source.Developer, source.Publisher, source.ReleaseYear, source.Description, source.CoverImageURL, @CreatedBy, ISNULL(source.CreatedAt, GETDATE()));
+        
+        SET IDENTITY_INSERT Games OFF;
+        
+        DELETE FROM GameGenres
+        WHERE GameID IN (SELECT GameID FROM @TempGames)
+        
+        DELETE FROM GamePlatforms
+        WHERE GameID IN (SELECT GameID FROM @TempGames)
+        
+        INSERT INTO GameGenres (GameID, GenreID)
+        SELECT DISTINCT t.GameID, g.GenreID
+        FROM @TempGames t
+        CROSS APPLY t.Genres.nodes('Genres/Genre') AS genre(x)
+        INNER JOIN Genres g ON g.GenreName = genre.x.value('(GenreName/text())[1]', 'NVARCHAR(100)')
+        WHERE genre.x.value('(GenreName/text())[1]', 'NVARCHAR(100)') IS NOT NULL
+        
+        INSERT INTO GamePlatforms (GameID, PlatformID)
+        SELECT DISTINCT t.GameID, p.PlatformID
+        FROM @TempGames t
+        CROSS APPLY t.Platforms.nodes('Platforms/Platform') AS platform(x)
+        INNER JOIN Platforms p ON p.PlatformName = platform.x.value('(PlatformName/text())[1]', 'NVARCHAR(100)')
+        WHERE platform.x.value('(PlatformName/text())[1]', 'NVARCHAR(100)') IS NOT NULL
+        
+        SET @Success = 1
+        COMMIT TRANSACTION
+        RETURN 0
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION
+        
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE()
+        DECLARE @ErrorSeverity INT = ERROR_SEVERITY()
+        DECLARE @ErrorState INT = ERROR_STATE()
+        
+        RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState)
+        SET @Success = 0
+        RETURN -1
+    END CATCH
+END
+GO
+
 PRINT 'All stored procedures created successfully!';
 GO

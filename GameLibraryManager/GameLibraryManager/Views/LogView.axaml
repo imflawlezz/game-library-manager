@@ -17,122 +17,56 @@
                 ClipToBounds="True">
             <Grid RowDefinitions="Auto,*">
                 
-                <Border Grid.Row="0"
-                        Background="#21262D"
-                        Padding="24,16"
-                        BorderBrush="#30363D"
-                        BorderThickness="0,0,0,1"
-                        ClipToBounds="False">
-                    <ScrollViewer HorizontalScrollBarVisibility="Visible" 
-                                  VerticalScrollBarVisibility="Disabled">
-                        <Grid ColumnDefinitions="80,140,120,100,100,200,200,200" MinWidth="1140">
-                        <TextBlock Grid.Column="0" 
-                                   Text="ID" 
-                                   FontWeight="SemiBold" 
-                                   FontSize="13"
-                                   Foreground="#8B949E"/>
-                        <TextBlock Grid.Column="1" 
-                                   Text="Timestamp" 
-                                   FontWeight="SemiBold" 
-                                   FontSize="13"
-                                   Foreground="#8B949E"/>
-                        <TextBlock Grid.Column="2" 
-                                   Text="User" 
-                                   FontWeight="SemiBold" 
-                                   FontSize="13"
-                                   Foreground="#8B949E"/>
-                        <TextBlock Grid.Column="3" 
-                                   Text="Table" 
-                                   FontWeight="SemiBold" 
-                                   FontSize="13"
-                                   Foreground="#8B949E"/>
-                        <TextBlock Grid.Column="4" 
-                                   Text="Action" 
-                                   FontWeight="SemiBold" 
-                                   FontSize="13"
-                                   Foreground="#8B949E"/>
-                        <TextBlock Grid.Column="5" 
-                                   Text="Field" 
-                                   FontWeight="SemiBold" 
-                                   FontSize="13"
-                                   Foreground="#8B949E"/>
-                        <TextBlock Grid.Column="6" 
-                                   Text="Old Value" 
-                                   FontWeight="SemiBold" 
-                                   FontSize="13"
-                                   Foreground="#8B949E"/>
-                        <TextBlock Grid.Column="7" 
-                                   Text="New Value" 
-                                   FontWeight="SemiBold" 
-                                   FontSize="13"
-                                   Foreground="#8B949E"/>
-                        </Grid>
-                    </ScrollViewer>
-                </Border>
-                
                 <Grid Grid.Row="1">
-                    <ScrollViewer VerticalScrollBarVisibility="Visible"
-                                  HorizontalScrollBarVisibility="Visible"
-                                  IsVisible="{Binding !IsLoading}">
-                        <ItemsControl ItemsSource="{Binding LogEntries}" MinWidth="1140">
-                            <ItemsControl.ItemTemplate>
+                    <DataGrid ItemsSource="{Binding LogEntries}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              GridLinesVisibility="None"
+                              HeadersVisibility="Column"
+                              SelectionMode="Single"
+                              Background="Transparent"
+                              RowBackground="Transparent"
+                              CanUserReorderColumns="False"
+                              CanUserResizeColumns="True"
+                              IsVisible="{Binding !IsLoading}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" 
+                                                Binding="{Binding LogID}" 
+                                                Width="80"
+                                                CanUserResize="True"
+                                                MinWidth="60"/>
+                            <DataGridTextColumn Header="Timestamp" 
+                                                Binding="{Binding Timestamp, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}" 
+                                                Width="140"
+                                                CanUserResize="True"
+                                                MinWidth="100"/>
+                            <DataGridTextColumn Header="User" 
+                                                Binding="{Binding Username}" 
+                                                Width="120"
+                                                CanUserResize="True"
+                                                MinWidth="80"/>
+                            <DataGridTextColumn Header="Table" 
+                                                Binding="{Binding TableName}" 
+                                                Width="100"
+                                                CanUserResize="True"
+                                                MinWidth="80"/>
+                            <DataGridTextColumn Header="Action" 
+                                                Binding="{Binding Action}" 
+                                                Width="100"
+                                                CanUserResize="True"
+                                                MinWidth="80"/>
+                            <DataGridTextColumn Header="Field" 
+                                                Binding="{Binding FieldName}" 
+                                                Width="200"
+                                                CanUserResize="True"
+                                                MinWidth="100"/>
+                            <DataGridTemplateColumn Header="Old Value" 
+                                                     Width="200"
+                                                     CanUserResize="True"
+                                                     MinWidth="150">
+                                <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Border Padding="24,14"
-                                            BorderBrush="#30363D"
-                                            BorderThickness="0,0,0,1"
-                                            Background="Transparent">
-                                        <Border.Styles>
-                                            <Style Selector="Border:pointerover">
-                                                <Setter Property="Background" Value="#21262D"/>
-                                            </Style>
-                                        </Border.Styles>
-                                        <Grid ColumnDefinitions="80,140,120,100,100,200,200,200">
-                                            
-                                            <TextBlock Grid.Column="0"
-                                                       Text="{Binding LogID}"
-                                                       FontSize="13"
-                                                       Foreground="#6E7681"
-                                                       VerticalAlignment="Center"/>
-                                            
-                                            <TextBlock Grid.Column="1"
-                                                       Text="{Binding Timestamp, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}"
-                                                       FontSize="13"
-                                                       Foreground="#8B949E"
-                                                       VerticalAlignment="Center"/>
-                                            
-                                            <TextBlock Grid.Column="2"
-                                                       Text="{Binding Username}"
-                                                       FontSize="13"
-                                                       Foreground="#F0F6FC"
-                                                       VerticalAlignment="Center">
-                                                <TextBlock.Text>
-                                                    <Binding Path="Username" FallbackValue="System"/>
-                                                </TextBlock.Text>
-                                            </TextBlock>
-                                            
-                                            <TextBlock Grid.Column="3"
-                                                       Text="{Binding TableName}"
-                                                       FontSize="13"
-                                                       Foreground="#8B949E"
-                                                       VerticalAlignment="Center"/>
-                                            
-                                            <TextBlock Grid.Column="4"
-                                                       Text="{Binding Action}"
-                                                       FontSize="13"
-                                                       FontWeight="Medium"
-                                                       Foreground="#58A6FF"
-                                                       VerticalAlignment="Center"/>
-                                            
-                                            <TextBlock Grid.Column="5"
-                                                       Text="{Binding FieldName}"
-                                                       FontSize="13"
-                                                       Foreground="#8B949E"
-                                                       VerticalAlignment="Center"
-                                                       TextTrimming="CharacterEllipsis"
-                                                       MaxWidth="180"/>
-                                            
-                                            <StackPanel Grid.Column="6"
-                                                        Orientation="Horizontal"
+                                        <StackPanel Orientation="Horizontal" 
                                                         Spacing="8"
                                                         VerticalAlignment="Center"
                                                         IsVisible="{Binding OldValue, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
@@ -141,8 +75,9 @@
                                                            Foreground="#8B949E"
                                                            VerticalAlignment="Center"
                                                            TextTrimming="CharacterEllipsis"
+                                                       TextWrapping="NoWrap"
                                                            MaxWidth="160"/>
-                                                <Button Command="{Binding $parent[ItemsControl].DataContext.CopyToClipboardCommand}"
+                                            <Button Command="{Binding $parent[DataGrid].DataContext.CopyToClipboardCommand}"
                                                         CommandParameter="{Binding OldValue}"
                                                         Classes="icon"
                                                         Padding="4"
@@ -151,7 +86,7 @@
                                                         <MultiBinding Converter="{StaticResource ShouldShowCopyConverter}">
                                                             <Binding Path="OldValue"/>
                                                             <Binding Path="FieldName"/>
-                                                            <Binding Path="$parent[ItemsControl].DataContext"/>
+                                                        <Binding Path="$parent[DataGrid].DataContext"/>
                                                         </MultiBinding>
                                                     </Button.IsVisible>
                                                     <i:Icon Value="fa-solid fa-copy" 
@@ -159,9 +94,16 @@
                                                             Foreground="#6E7681"/>
                                                 </Button>
                                             </StackPanel>
-                                            
-                                            <StackPanel Grid.Column="7"
-                                                        Orientation="Horizontal"
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="New Value" 
+                                                     Width="200"
+                                                     CanUserResize="True"
+                                                     MinWidth="150">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" 
                                                         Spacing="8"
                                                         VerticalAlignment="Center"
                                                         IsVisible="{Binding NewValue, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
@@ -170,8 +112,9 @@
                                                            Foreground="#F0F6FC"
                                                            VerticalAlignment="Center"
                                                            TextTrimming="CharacterEllipsis"
+                                                       TextWrapping="NoWrap"
                                                            MaxWidth="160"/>
-                                                <Button Command="{Binding $parent[ItemsControl].DataContext.CopyToClipboardCommand}"
+                                            <Button Command="{Binding $parent[DataGrid].DataContext.CopyToClipboardCommand}"
                                                         CommandParameter="{Binding NewValue}"
                                                         Classes="icon"
                                                         Padding="4"
@@ -180,7 +123,7 @@
                                                         <MultiBinding Converter="{StaticResource ShouldShowCopyConverter}">
                                                             <Binding Path="NewValue"/>
                                                             <Binding Path="FieldName"/>
-                                                            <Binding Path="$parent[ItemsControl].DataContext"/>
+                                                        <Binding Path="$parent[DataGrid].DataContext"/>
                                                         </MultiBinding>
                                                     </Button.IsVisible>
                                                     <i:Icon Value="fa-solid fa-copy" 
@@ -188,12 +131,11 @@
                                                             Foreground="#6E7681"/>
                                                 </Button>
                                             </StackPanel>
-                                        </Grid>
-                                    </Border>
                                 </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ScrollViewer>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
                     
                     <Border Background="#E00D1117"
                             IsVisible="{Binding IsLoading}">
@@ -201,7 +143,9 @@
                     </Border>
                     
                     <Border IsVisible="{Binding IsEmpty}"
-                            Background="#161B22">
+                            Background="#161B22"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Stretch">
                         <StackPanel VerticalAlignment="Center" 
                                     HorizontalAlignment="Center"
                                     Spacing="16">
@@ -219,4 +163,3 @@
         </Border>
     </Grid>
 </UserControl>
-

@@ -69,13 +69,13 @@ namespace GameLibraryManager.ViewModels
 
         private async Task LoadLogsAsync()
         {
-            Dispatcher.UIThread.Post(() => IsLoading = true);
+            await Dispatcher.UIThread.InvokeAsync(() => IsLoading = true);
 
             try
             {
-                var entries = await Task.Run(() => _dbService.GetAuditLogAsync(limit: 1000)).ConfigureAwait(false);
+                var entries = await Task.Run(() => _dbService.GetAuditLogAsync(limit: 2000)).ConfigureAwait(false);
                 
-                Dispatcher.UIThread.Post(() =>
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     _allLogEntries = new ObservableCollection<AuditLogEntry>(entries);
                     LogEntries = new ObservableCollection<AuditLogEntry>(entries);
@@ -85,7 +85,7 @@ namespace GameLibraryManager.ViewModels
             }
             catch (Exception ex)
             {
-                Dispatcher.UIThread.Post(() =>
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     NotificationService.ShowError($"Failed to load audit log: {ex.Message}");
                     IsLoading = false;

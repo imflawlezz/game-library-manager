@@ -289,12 +289,14 @@
                     
                     
                     <Border Grid.Column="1" 
-                            HorizontalAlignment="Center"
+                            HorizontalAlignment="Stretch"
                             MaxWidth="400"
+                            MinWidth="200"
                             IsVisible="{Binding ShowSearch}">
                         <TextBox Watermark="{Binding SearchWatermark}"
                                  Text="{Binding SearchText}"
-                                 Width="350">
+                                 HorizontalAlignment="Stretch"
+                                 MinWidth="200">
                             <TextBox.InnerLeftContent>
                                 <i:Icon Value="fa-solid fa-magnifying-glass" 
                                         FontSize="14"

@@ -10,6 +10,9 @@
         <converters:BoolToSelectedForegroundConverter x:Key="BoolToSelectedForegroundConverter"/>
         <converters:StatusIconConverter x:Key="StatusIconConverter"/>
         <converters:StatusColorConverter x:Key="StatusColorConverter"/>
+        <converters:ActionColorConverter x:Key="ActionColorConverter"/>
+        <converters:ActionIconConverter x:Key="ActionIconConverter"/>
+        <converters:TableNameColorConverter x:Key="TableNameColorConverter"/>
         
         <FontFamily x:Key="AppFont">Inter, Segoe UI Variable, Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, sans-serif</FontFamily>
         
@@ -425,13 +428,19 @@
         
         <Style Selector="DataGridRow">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderBrush" Value="#30363D"/>
+            <Setter Property="BorderBrush" Value="#21262D"/>
             <Setter Property="BorderThickness" Value="0,0,0,1"/>
-            <Setter Property="MinHeight" Value="40"/>
+            <Setter Property="MinHeight" Value="48"/>
         </Style>
         
         <Style Selector="DataGridRow:pointerover">
-            <Setter Property="Background" Value="#21262D"/>
+            <Setter Property="Background" Value="#1A1F28"/>
+            <Setter Property="BorderBrush" Value="#30363D"/>
+        </Style>
+        
+        <Style Selector="DataGridRow:selected">
+            <Setter Property="Background" Value="#1A4A2E"/>
+            <Setter Property="BorderBrush" Value="#238636"/>
         </Style>
     </Application.Styles>
 </Application>

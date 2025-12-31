@@ -1,5 +1,6 @@
 using System;
 using System.Reactive;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -16,6 +17,7 @@ namespace GameLibraryManager.ViewModels
     {
         private readonly SessionManager _sessionManager;
         private readonly DatabaseService _dbService;
+        private CancellationTokenSource? _connectionCheckCts;
 
         [Reactive] public ViewModelBase? CurrentViewModel { get; set; }
         [Reactive] public string SearchText { get; set; } = string.Empty;
@@ -41,6 +43,9 @@ namespace GameLibraryManager.ViewModels
         [Reactive] public bool ShowAddUser { get; set; }
         [Reactive] public bool ShowGameDetailsActions { get; set; }
         [Reactive] public bool IsInLibrary { get; set; }
+        
+        [Reactive] public bool IsConnected { get; set; }
+        [Reactive] public bool IsCheckingConnection { get; set; }
         
         public NotificationService NotificationService => NotificationService.Instance;
 
@@ -117,6 +122,51 @@ namespace GameLibraryManager.ViewModels
             }
             
             _ = RefreshUnreviewedReportsCount();
+            
+            StartConnectionCheck();
+        }
+        
+        private void StartConnectionCheck()
+        {
+            _connectionCheckCts = new CancellationTokenSource();
+            var token = _connectionCheckCts.Token;
+            
+            Task.Run(async () =>
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    try
+                    {
+                        IsCheckingConnection = true;
+                        await _dbService.TestConnectionAsync();
+                        
+                        await Task.Delay(100, token);
+                        await Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            IsConnected = true;
+                            IsCheckingConnection = false;
+                        });
+                    }
+                    catch
+                    {
+                        await Task.Delay(100, token);
+                        await Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            IsConnected = false;
+                            IsCheckingConnection = false;
+                        });
+                    }
+                    
+                    await Task.Delay(1500, token);
+                }
+            }, token);
+        }
+        
+        public void Dispose()
+        {
+            _connectionCheckCts?.Cancel();
+            _connectionCheckCts?.Dispose();
+            _connectionCheckCts = null;
         }
 
         private void ResetNavState()
@@ -341,6 +391,13 @@ namespace GameLibraryManager.ViewModels
             else if (CurrentViewModel is ReportsManagementViewModel reportsMgtVm)
             {
                 reportsMgtVm.LoadReportsCommand.Execute().Subscribe();
+            }
+            else if (CurrentViewModel is ReportsViewModel reportsVm)
+            {
+                if (reportsVm.SelectedView == "My Reports")
+                {
+                    reportsVm.LoadUserReportsCommand.Execute().Subscribe();
+                }
             }
             
             if (IsAdmin)

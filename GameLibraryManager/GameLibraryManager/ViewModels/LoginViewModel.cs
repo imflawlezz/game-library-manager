@@ -1,10 +1,12 @@
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using GameLibraryManager.Services;
 
 namespace GameLibraryManager.ViewModels
@@ -13,12 +15,17 @@ namespace GameLibraryManager.ViewModels
     {
         private readonly AuthenticationService _authService;
         private readonly SessionManager _sessionManager;
+        private readonly DatabaseService _dbService;
+        private CancellationTokenSource? _connectionCheckCts;
 
         private string _email = string.Empty;
         private string _password = string.Empty;
         private string _username = string.Empty;
         private bool _isLoading;
         private bool _isRegisterMode;
+        
+        [Reactive] public bool IsConnected { get; set; }
+        [Reactive] public bool IsCheckingConnection { get; set; }
         
         public NotificationService NotificationService => NotificationService.Instance;
 
@@ -62,6 +69,7 @@ namespace GameLibraryManager.ViewModels
         {
             _authService = authService;
             _sessionManager = sessionManager;
+            _dbService = dbService;
 
             LoginCommand = ReactiveCommand.CreateFromTask(LoginAsync, outputScheduler: RxApp.MainThreadScheduler);
             RegisterCommand = ReactiveCommand.CreateFromTask(RegisterAsync, outputScheduler: RxApp.MainThreadScheduler);
@@ -71,6 +79,45 @@ namespace GameLibraryManager.ViewModels
             {
                 NotificationService.ShowError($"Login error: {ex.Message}");
             });
+            
+            StartConnectionCheck();
+        }
+        
+        private void StartConnectionCheck()
+        {
+            _connectionCheckCts = new CancellationTokenSource();
+            var token = _connectionCheckCts.Token;
+            
+            Task.Run(async () =>
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    try
+                    {
+                        IsCheckingConnection = true;
+                        await _dbService.TestConnectionAsync();
+                        
+                        await Task.Delay(100, token); // Small delay for UI update
+                        IsConnected = true;
+                        IsCheckingConnection = false;
+                    }
+                    catch
+                    {
+                        await Task.Delay(100, token);
+                        IsConnected = false;
+                        IsCheckingConnection = false;
+                    }
+                    
+                    await Task.Delay(5000, token);
+                }
+            }, token);
+        }
+        
+        public void Dispose()
+        {
+            _connectionCheckCts?.Cancel();
+            _connectionCheckCts?.Dispose();
+            _connectionCheckCts = null;
         }
 
         private async Task LoginAsync()

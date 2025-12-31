@@ -30,6 +30,14 @@ namespace GameLibraryManager.ViewModels
 
         public ReportSuggestion Report => _report;
         public NotificationService NotificationService => NotificationService.Instance;
+        
+        public string DialogTitle => _isReadOnly 
+            ? $"Your {_report.Type}" 
+            : "Review Report";
+            
+        public string DialogSubtitle => _isReadOnly 
+            ? $"View details of your {_report.Type.ToLower()}" 
+            : "Review and respond to the report";
 
         public ReactiveCommand<Unit, Unit>? SubmitReviewCommand { get; }
         public ReactiveCommand<Unit, Unit> CancelCommand { get; }

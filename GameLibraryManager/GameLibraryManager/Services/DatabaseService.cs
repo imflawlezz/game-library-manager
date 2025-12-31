@@ -60,22 +60,22 @@ namespace GameLibraryManager.Services
 
                 try
                 {
-                    foreach (var line in File.ReadAllLines(envPath))
+                foreach (var line in File.ReadAllLines(envPath))
+                {
+                    if (string.IsNullOrWhiteSpace(line) || line.TrimStart().StartsWith("#"))
                     {
-                        if (string.IsNullOrWhiteSpace(line) || line.TrimStart().StartsWith("#"))
-                        {
-                            continue;
-                        }
-
-                        var parsed = ParseEnvLine(line);
-                        if (parsed is { Key: { Length: >0 } key, Value: var value })
-                        {
-                            Environment.SetEnvironmentVariable(key, value);
-                        }
+                        continue;
                     }
 
+                    var parsed = ParseEnvLine(line);
+                    if (parsed is { Key: { Length: >0 } key, Value: var value })
+                    {
+                        Environment.SetEnvironmentVariable(key, value);
+                    }
+                }
+
                     _envLoaded = true;
-                    break;
+                break;
                 }
                 catch
                 {

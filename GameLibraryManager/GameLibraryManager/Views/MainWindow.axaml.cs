@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using GameLibraryManager.ViewModels;
 
 namespace GameLibraryManager.Views
 {
@@ -7,6 +8,15 @@ namespace GameLibraryManager.Views
         public MainWindow()
         {
             InitializeComponent();
+            this.Closing += MainWindow_Closing;
+        }
+
+        private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (DataContext is MainWindowViewModel viewModel)
+            {
+                viewModel.Dispose();
+            }
         }
     }
 }

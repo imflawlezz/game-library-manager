@@ -145,6 +145,7 @@
                     <ProgressBar IsIndeterminate="True"
                                  IsVisible="{Binding IsLoading}"
                                  Height="4"
+                                 MinHeight="4"
                                  Margin="0,8,0,0"/>
                 </StackPanel>
             </Border>

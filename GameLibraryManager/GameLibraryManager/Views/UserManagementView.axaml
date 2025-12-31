@@ -173,7 +173,7 @@
                                                     <controls:AsyncImage Source="{Binding ProfileImageURL}"
                                                                         HorizontalAlignment="Stretch"
                                                                         VerticalAlignment="Stretch"
-                                                                        IsVisible="{Binding ProfileImageURL, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                                           IsVisible="{Binding ProfileImageURL, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
                                                 </Grid>
                                             </Border>
                                             <StackPanel VerticalAlignment="Center" Spacing="2">

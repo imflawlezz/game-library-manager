@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:GameLibraryManager.ViewModels"
              xmlns:controls="using:GameLibraryManager.Controls"
+             xmlns:spinner="using:GameLibraryManager.Controls"
              xmlns:i="https://github.com/projektanker/icons.avalonia"
              x:Class="GameLibraryManager.Views.GameDetailsView"
              x:DataType="vm:GameDetailsViewModel">
@@ -151,15 +152,7 @@
         
         <Border Background="#CC0D1117"
                 IsVisible="{Binding IsLoading}">
-            <StackPanel VerticalAlignment="Center" 
-                        HorizontalAlignment="Center"
-                        Spacing="16">
-                <ProgressBar IsIndeterminate="True" Width="200"/>
-                <TextBlock Text="Loading..."
-                           FontSize="14"
-                           Foreground="#8B949E"
-                           HorizontalAlignment="Center"/>
-            </StackPanel>
+            <spinner:LoadingSpinner Text="Loading..."/>
         </Border>
     </Grid>
 </UserControl>

@@ -2,95 +2,314 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:GameLibraryManager.ViewModels"
              xmlns:i="https://github.com/projektanker/icons.avalonia"
+             xmlns:converters="using:GameLibraryManager.Converters"
+             xmlns:spinner="using:GameLibraryManager.Controls"
              x:Class="GameLibraryManager.Views.ReportsView"
              x:DataType="vm:ReportsViewModel">
     
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <Panel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,40,0,40">
-            <Border Background="#161B22"
-                    CornerRadius="12"
-                    Width="600"
-                    Padding="32"
-                    BorderBrush="#30363D"
-                    BorderThickness="1"
-                    BoxShadow="0 16 32 0 #60000000">
-                <StackPanel Spacing="24">
-                    <StackPanel Spacing="16">
-                        <StackPanel Spacing="8">
-                            <TextBlock Text="Type"
-                                       FontSize="13"
-                                       FontWeight="Medium"
-                                       Foreground="#8B949E"/>
-                            <ComboBox ItemsSource="{Binding ReportTypes}"
-                                      SelectedItem="{Binding SelectedType}"
-                                      HorizontalAlignment="Stretch"/>
-                        </StackPanel>
-                        
-                        <StackPanel Spacing="8">
-                            <TextBlock Text="Title *"
-                                       FontSize="13"
-                                       FontWeight="Medium"
-                                       Foreground="#8B949E"/>
-                            <Grid>
-                                <TextBox Text="{Binding Title}"
-                                         Watermark="Enter a brief title"
-                                         MaxLength="255"
-                                         Padding="40,10,12,10"/>
-                                <i:Icon Value="fa-solid fa-heading" 
-                                        FontSize="14"
-                                        Foreground="#6E7681"
-                                        HorizontalAlignment="Left"
-                                        VerticalAlignment="Center"
-                                        Margin="12,0,0,0"/>
-                            </Grid>
-                        </StackPanel>
-                        
-                        <StackPanel Spacing="8">
-                            <TextBlock Text="Content *"
-                                       FontSize="13"
-                                       FontWeight="Medium"
-                                       Foreground="#8B949E"/>
-                            <Grid>
-                                <TextBox Text="{Binding Content}"
-                                         Watermark="Describe your report or suggestion in detail..."
-                                         AcceptsReturn="True"
-                                         TextWrapping="Wrap"
-                                         MinHeight="200"
-                                         MaxLength="5000"
-                                         Padding="40,10,12,10"/>
-                                <i:Icon Value="fa-solid fa-align-left" 
-                                        FontSize="14"
-                                        Foreground="#6E7681"
-                                        HorizontalAlignment="Left"
-                                        VerticalAlignment="Top"
-                                        Margin="12,10,0,0"/>
-                            </Grid>
-                        </StackPanel>
+    <Panel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,40,0,40">
+        <Border Background="#161B22"
+                CornerRadius="12"
+                Width="600"
+                BorderBrush="#30363D"
+                BorderThickness="1"
+                BoxShadow="0 16 32 0 #60000000"
+                ClipToBounds="True">
+            <Grid RowDefinitions="Auto,*">
+                
+                <Border Grid.Row="0"
+                        Background="#21262D"
+                        Padding="24,20"
+                        BorderBrush="#30363D"
+                        BorderThickness="0,0,0,1">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="0">
+                        <Button Command="{Binding SwitchViewCommand}"
+                                CommandParameter="Submit"
+                                Padding="20,12"
+                                MinWidth="160"
+                                HorizontalContentAlignment="Center"
+                                BorderThickness="0,0,0,3"
+                                Background="Transparent"
+                                CornerRadius="0">
+                            <Button.Styles>
+                                <Style Selector="Button">
+                                    <Setter Property="BorderThickness" Value="0,0,0,3"/>
+                                </Style>
+                                <Style Selector="Button:pointerover">
+                                    <Setter Property="Background" Value="#161B22"/>
+                                </Style>
+                            </Button.Styles>
+                            <Button.Foreground>
+                                <Binding Path="IsSubmitSelected" Converter="{StaticResource BoolToSelectedForegroundConverter}"/>
+                            </Button.Foreground>
+                            <Button.BorderBrush>
+                                <Binding Path="IsSubmitSelected" Converter="{StaticResource BoolToSelectedBackgroundConverter}"/>
+                            </Button.BorderBrush>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <i:Icon Value="fa-solid fa-paper-plane" 
+                                        FontSize="14"/>
+                                <TextBlock Text="Submit"
+                                           FontWeight="Medium"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding SwitchViewCommand}"
+                                CommandParameter="My Reports"
+                                Padding="20,12"
+                                MinWidth="160"
+                                HorizontalContentAlignment="Center"
+                                BorderThickness="0,0,0,3"
+                                Background="Transparent"
+                                CornerRadius="0">
+                            <Button.Styles>
+                                <Style Selector="Button">
+                                    <Setter Property="BorderThickness" Value="0,0,0,3"/>
+                                </Style>
+                                <Style Selector="Button:pointerover">
+                                    <Setter Property="Background" Value="#161B22"/>
+                                </Style>
+                            </Button.Styles>
+                            <Button.Foreground>
+                                <Binding Path="IsMyReportsSelected" Converter="{StaticResource BoolToSelectedForegroundConverter}"/>
+                            </Button.Foreground>
+                            <Button.BorderBrush>
+                                <Binding Path="IsMyReportsSelected" Converter="{StaticResource BoolToSelectedBackgroundConverter}"/>
+                            </Button.BorderBrush>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <i:Icon Value="fa-solid fa-clipboard-list" 
+                                        FontSize="14"/>
+                                <TextBlock Text="My Reports"
+                                           FontWeight="Medium"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
+                </Border>
+                
+                <Grid Grid.Row="1">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  IsVisible="{Binding ShowSubmitForm}">
+                        <Border Padding="32">
+                            <StackPanel Spacing="24">
+                                <StackPanel Spacing="16">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="Type"
+                                                   FontSize="13"
+                                                   FontWeight="Medium"
+                                                   Foreground="#8B949E"/>
+                                        <ComboBox ItemsSource="{Binding ReportTypes}"
+                                                  SelectedItem="{Binding SelectedType}"
+                                                  HorizontalAlignment="Stretch"/>
+                                    </StackPanel>
+                                    
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="Title *"
+                                                   FontSize="13"
+                                                   FontWeight="Medium"
+                                                   Foreground="#8B949E"/>
+                                        <Grid>
+                                            <TextBox Text="{Binding Title}"
+                                                     Watermark="Enter a brief title"
+                                                     MaxLength="255"
+                                                     Padding="40,10,12,10"/>
+                                            <i:Icon Value="fa-solid fa-heading" 
+                                                    FontSize="14"
+                                                    Foreground="#6E7681"
+                                                    HorizontalAlignment="Left"
+                                                    VerticalAlignment="Center"
+                                                    Margin="12,0,0,0"/>
+                                        </Grid>
+                                    </StackPanel>
+                                    
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="Content *"
+                                                   FontSize="13"
+                                                   FontWeight="Medium"
+                                                   Foreground="#8B949E"/>
+                                        <Grid>
+                                            <TextBox Text="{Binding Content}"
+                                                     Watermark="Describe your report or suggestion in detail..."
+                                                     AcceptsReturn="True"
+                                                     TextWrapping="Wrap"
+                                                     MinHeight="200"
+                                                     MaxLength="5000"
+                                                     Padding="40,10,12,10"/>
+                                            <i:Icon Value="fa-solid fa-align-left" 
+                                                    FontSize="14"
+                                                    Foreground="#6E7681"
+                                                    HorizontalAlignment="Left"
+                                                    VerticalAlignment="Top"
+                                                    Margin="12,10,0,0"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </StackPanel>
+                                
+                            <Button Command="{Binding SubmitReportCommand}"
+                                    Classes="primary"
+                                    HorizontalAlignment="Stretch"
+                                    Height="44"
+                                    IsEnabled="{Binding !IsSubmitting}">
+                                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                    <i:Icon Value="fa-solid fa-paper-plane" 
+                                            FontSize="14" 
+                                            IsVisible="{Binding !IsSubmitting}"/>
+                                    <TextBlock Text="Submit" 
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"
+                                               IsVisible="{Binding !IsSubmitting}"/>
+                                    <TextBlock Text="Submitting..." 
+                                               FontWeight="Medium"
+                                               VerticalAlignment="Center"
+                                               IsVisible="{Binding IsSubmitting}"/>
+                                </StackPanel>
+                            </Button>
+                            
+                            </StackPanel>
+                        </Border>
+                    </ScrollViewer>
                     
-                    <Button Command="{Binding SubmitReportCommand}"
-                            Classes="primary"
-                            HorizontalAlignment="Stretch"
-                            Height="44"
-                            IsEnabled="{Binding !IsSubmitting}">
-                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
-                            <i:Icon Value="fa-solid fa-paper-plane" 
-                                    FontSize="14" 
-                                    IsVisible="{Binding !IsSubmitting}"/>
-                            <TextBlock Text="Submit" 
-                                       FontWeight="SemiBold"
-                                       VerticalAlignment="Center"
-                                       IsVisible="{Binding !IsSubmitting}"/>
-                            <TextBlock Text="Submitting..." 
-                                       FontWeight="Medium"
-                                       VerticalAlignment="Center"
-                                       IsVisible="{Binding IsSubmitting}"/>
-                        </StackPanel>
-                    </Button>
-                    
-                </StackPanel>
+                    <Grid IsVisible="{Binding ShowMyReports}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                      Margin="20"
+                                      IsVisible="{Binding ShowContent}">
+                            <ItemsControl ItemsSource="{Binding UserReports}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Command="{Binding $parent[ItemsControl].DataContext.ViewReportCommand}"
+                                                CommandParameter="{Binding}"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Stretch"
+                                                Padding="0"
+                                                Background="Transparent"
+                                                BorderThickness="0"
+                                                Margin="0,0,0,12"
+                                                Cursor="Hand"
+                                                Classes="ghost">
+                                            <Border Padding="16,14"
+                                                    Background="#21262D"
+                                                    CornerRadius="8"
+                                                    BorderBrush="#30363D"
+                                                    BorderThickness="1"
+                                                    Name="ReportBorder">
+                                                <Border.Styles>
+                                                    <Style Selector="Border">
+                                                        <Setter Property="Background" Value="#21262D"/>
+                                                    </Style>
+                                                    <Style Selector="Button:pointerover Border">
+                                                        <Setter Property="Background" Value="#1A1F28"/>
+                                                        <Setter Property="BorderBrush" Value="#58A6FF"/>
+                                                    </Style>
+                                                </Border.Styles>
+                                                <StackPanel Spacing="6">
+                                                    <TextBlock Text="{Binding Title}"
+                                                               FontSize="15"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="#F0F6FC"
+                                                               TextWrapping="Wrap"/>
+                                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Type}"
+                                                                   FontSize="12"
+                                                                   Foreground="#8B949E"
+                                                                   VerticalAlignment="Center"/>
+                                                        <TextBlock Text="•"
+                                                                   FontSize="12"
+                                                                   Foreground="#6E7681"
+                                                                   Margin="4,0,4,0"
+                                                                   VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{Binding CreatedAt, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}"
+                                                                   FontSize="12"
+                                                                   Foreground="#8B949E"
+                                                                   VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                    
+                                                    <StackPanel Orientation="Horizontal" 
+                                                                Spacing="6"
+                                                                IsVisible="{Binding ReviewedByUsername, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                                Margin="0,2,0,0"
+                                                                VerticalAlignment="Center">
+                                                        <i:Icon Value="{Binding Status, Converter={StaticResource StatusIconConverter}}" 
+                                                                FontSize="12"
+                                                                VerticalAlignment="Center">
+                                                            <i:Icon.Foreground>
+                                                                <SolidColorBrush Color="{Binding Status, Converter={StaticResource StatusColorConverter}}"/>
+                                                            </i:Icon.Foreground>
+                                                        </i:Icon>
+                                                        <TextBlock Text="{Binding Status}"
+                                                                   FontSize="12"
+                                                                   Foreground="#8B949E"
+                                                                   VerticalAlignment="Center"/>
+                                                        <TextBlock Text="by"
+                                                                   FontSize="12"
+                                                                   Foreground="#6E7681"
+                                                                   VerticalAlignment="Center"/>
+                                                        <i:Icon Value="fa-solid fa-user-check" 
+                                                                FontSize="11"
+                                                                Foreground="#6E7681"
+                                                                VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{Binding ReviewedByUsername}"
+                                                                   FontSize="12"
+                                                                   Foreground="#8B949E"
+                                                                   VerticalAlignment="Center"/>
+                                                        <TextBlock Text="•"
+                                                                   FontSize="12"
+                                                                   Foreground="#6E7681"
+                                                                   Margin="4,0,4,0"
+                                                                   VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{Binding ReviewedAt, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}"
+                                                                   FontSize="12"
+                                                                   Foreground="#8B949E"
+                                                                   VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Border>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                        
+                        <Border Background="#161B22"
+                                IsVisible="{Binding ShowEmptyState}"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Stretch"
+                                Padding="40">
+                            <StackPanel VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center"
+                                        Spacing="20">
+                                <Border Width="80" Height="80"
+                                        CornerRadius="20"
+                                        Background="#21262D"
+                                        HorizontalAlignment="Center">
+                                    <i:Icon Value="fa-solid fa-clipboard-list" 
+                                            FontSize="40"
+                                            Foreground="#6E7681"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="No reports or suggestions yet"
+                                               FontSize="18"
+                                               FontWeight="SemiBold"
+                                               Foreground="#F0F6FC"
+                                               HorizontalAlignment="Center"/>
+                                    <TextBlock Text="You haven't submitted any reports or suggestions yet. Switch to the 'Submit' tab to create one."
+                                               FontSize="13"
+                                               Foreground="#8B949E"
+                                               TextWrapping="Wrap"
+                                               TextAlignment="Center"
+                                               HorizontalAlignment="Center"
+                                               MaxWidth="400"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                        
+                        <Border Background="#E00D1117"
+                                IsVisible="{Binding IsLoading}">
+                            <spinner:LoadingSpinner Text="Loading reports..."/>
+                        </Border>
+                    </Grid>
+                </Grid>
             </Border>
         </Panel>
-    </ScrollViewer>
 </UserControl>
 

@@ -169,10 +169,33 @@
                 <Border Grid.Row="2"
                         Padding="12,8"
                         HorizontalAlignment="Center">
-                    <TextBlock Text="v1.2.0"
-                               FontSize="11"
-                               Foreground="{StaticResource TextMuted}"
-                               Opacity="0.5"/>
+                    <StackPanel Orientation="Horizontal" 
+                                Spacing="8"
+                                HorizontalAlignment="Center">
+                        <i:Icon Value="fa-solid fa-circle"
+                                FontSize="6"
+                                VerticalAlignment="Center">
+                            <i:Icon.Foreground>
+                                <SolidColorBrush Color="{Binding IsConnected, Converter={StaticResource BoolToConnectionStatusColorConverter}}"/>
+                            </i:Icon.Foreground>
+                        </i:Icon>
+                        <TextBlock Text="{Binding IsConnected, Converter={StaticResource BoolToConnectionStatusTextConverter}}"
+                                   FontSize="10"
+                                   Foreground="{StaticResource TextMuted}"
+                                   Opacity="0.5"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="•"
+                                   FontSize="10"
+                                   Foreground="{StaticResource TextMuted}"
+                                   Opacity="0.5"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,0,2"/>
+                        <TextBlock Text="v1.2.0"
+                                   FontSize="11"
+                                   Foreground="{StaticResource TextMuted}"
+                                   Opacity="0.5"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
                 </Border>
                 
                 
@@ -321,7 +344,7 @@
                     
                     <StackPanel Grid.Column="2" 
                                 Orientation="Horizontal" 
-                                Spacing="8"
+                                Spacing="4"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Center">
                         
@@ -442,7 +465,7 @@
                     </Border.Background>
                 </Border>
                 <ContentControl Content="{Binding CurrentViewModel}"
-                                Padding="24">
+                    Padding="24">
                     <ContentControl.DataTemplates>
                         <DataTemplate DataType="vm:ReportsViewModel">
                             <views:ReportsView/>

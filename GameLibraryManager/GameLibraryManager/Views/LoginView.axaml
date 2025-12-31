@@ -214,7 +214,7 @@
             </Panel>
         
         
-        <TextBlock Text="v1.2.0"
+        <TextBlock Text="v1.3.0"
                    FontSize="11"
                    Foreground="{StaticResource TextSecondaryBrush}"
                    HorizontalAlignment="Right"

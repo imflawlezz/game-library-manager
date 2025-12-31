@@ -74,7 +74,7 @@
                     
                     <Border Classes="ImageShadowOverlay" IsHitTestVisible="False">
                         <Border.Background>
-                            <RadialGradientBrush Center="50%,50%" GradientOrigin="50%,50%" Radius="1.0">
+                            <RadialGradientBrush Center="50%,50%" GradientOrigin="50%,50%" RadiusX="100%" RadiusY="100%">
                                 <GradientStop Color="#00000000" Offset="0.4"/>
                                 <GradientStop Color="#E6000000" Offset="1"/>
                             </RadialGradientBrush>

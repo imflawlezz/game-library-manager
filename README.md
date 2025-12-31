@@ -4,11 +4,13 @@ A cross-platform desktop application for managing personal game collections. Thi
 
 ## Features
 
-- User authentication and role-based access control
-- Personal game library with status tracking, ratings, and notes
+- User authentication and role-based access control with session validation
+- Personal game library with status tracking, ratings, notes, and hours played
 - Game catalog management with genres and platforms
 - Administrative tools for user and game management
-- Audit logging and search functionality
+- Reports & Suggestions system for user feedback
+- XML export/import functionality for user libraries and global game catalog
+- Audit logging with detailed change tracking
 
 ## Technology Stack
 
@@ -16,6 +18,7 @@ A cross-platform desktop application for managing personal game collections. Thi
 - **UI Framework**: Avalonia 11.3.9
 - **Architecture**: MVVM with ReactiveUI
 - **Database**: Microsoft SQL Server with stored procedures and triggers
+- **Icons**: FontAwesome (via Projektanker.Icons.Avalonia)
 
 ## Database
 
@@ -97,8 +100,24 @@ Personal game library entries with user-specific tracking data.
 | DateAdded | DATETIME | Date when game was added to library |
 | LastModified | DATETIME | Last modification timestamp |
 
+#### Reports
+User reports and suggestions for feedback and feature requests.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| ReportID | INT | Primary key, auto-incrementing |
+| UserID | INT | Foreign key to Users(UserID) |
+| Type | NVARCHAR(20) | Type: 'Report' or 'Suggestion' |
+| Title | NVARCHAR(255) | Report/suggestion title |
+| Content | NVARCHAR(MAX) | Report/suggestion content |
+| Status | NVARCHAR(20) | Status: 'Unreviewed', 'Reviewed', 'Resolved', or 'Dismissed' (default: 'Unreviewed') |
+| ReviewedBy | INT | Foreign key to Users(UserID), nullable (admin who reviewed) |
+| AdminNotes | NVARCHAR(MAX) | Admin response/notes, nullable |
+| CreatedAt | DATETIME | Creation timestamp |
+| ReviewedAt | DATETIME | Review timestamp, nullable |
+
 #### AuditLog
-Complete audit trail tracking all changes to Users, Games, and UserGames tables.
+Complete audit trail tracking all changes to Users, Games, UserGames, and Reports tables.
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -113,16 +132,36 @@ Complete audit trail tracking all changes to Users, Games, and UserGames tables.
 | Timestamp | DATETIME | When the change occurred |
 
 ### Stored Procedures
-The database includes 31 stored procedures for operations such as user authentication, game management, library operations, search functionality, statistics, and audit log retrieval.
+
+The database includes stored procedures for:
+
+- **Authentication**: User login, registration, email validation, session validation
+- **User Management**: Create, update, delete users, get user statistics
+- **Game Management**: CRUD operations for games, genres, and platforms
+- **Library Operations**: Add/remove games from library, update library entries, get user library
+- **Search & Filtering**: Search games by title, filter by genre/platform/status
+- **Statistics**: User library statistics, game statistics
+- **Audit Log**: Retrieve audit log entries with filtering
+- **Reports Management**: Create, retrieve, update reports and suggestions
+- **XML Export/Import**:
 
 ### Triggers
+
 - **trg_Users_AuditLog**: Automatically logs all changes to user accounts
 - **trg_Games_AuditLog**: Automatically logs all changes to game records
 - **trg_UserGames_AuditLog**: Automatically logs all changes to user library entries
+- **trg_Reports_AuditLog**: Automatically logs all changes to reports and suggestions
 - **trg_UpdateLastModified**: Updates LastModified timestamp on UserGames updates
 
 ### Indexes
-Non-clustered indexes are created on frequently queried columns including email, roles, game titles, user library status, ratings, and audit log timestamps for optimal query performance.
+
+Non-clustered indexes are created on frequently queried columns including:
+- Email, roles, and user IDs
+- Game titles and creation metadata
+- User library status, ratings, and game IDs
+- Report status, type, user ID, and creation dates
+- Audit log timestamps, table names, and field names
+- Genre and platform relationships
 
 ## Setup
 
@@ -142,7 +181,7 @@ Non-clustered indexes are created on frequently queried columns including email,
    - `06_SeedData.sql` (optional, adds sample data)
 
 ### Configuration
-1. Create a `.env` file with your database connection string:
+1. Create a `.env` file in the project root with your database connection string:
    ```
    DB_CONNECTION_STRING=Server=localhost,1433;Database=GameLibraryDB;User Id=sa;Password=YourPassword;Integrated Security=false;TrustServerCertificate=true;
    ```
@@ -179,9 +218,9 @@ DatabaseScripts/     # SQL scripts for database setup
 
 ## Key Components
 
-- **Models**: Data models representing entities (Game, User, UserGame, Genre, Platform, AuditLogEntry, UserStatistics)
-- **ViewModels**: MVVM view models implementing presentation logic and data binding (LibraryViewModel, GameManagementViewModel, UserManagementViewModel, etc.)
-- **Views**: Avalonia XAML views defining the user interface (LibraryView, GameDetailsView, LoginView, etc.)
+- **Models**: Data models representing entities (Game, User, UserGame, Genre, Platform, ReportSuggestion, AuditLogEntry, UserStatistics)
+- **ViewModels**: MVVM view models implementing presentation logic and data binding (LibraryViewModel, GameManagementViewModel, UserManagementViewModel, ReportsViewModel, ReportsManagementViewModel, etc.)
+- **Views**: Avalonia XAML views defining the user interface (LibraryView, GameDetailsView, LoginView, ReportsView, etc.)
 - **Services**: Application services layer (AuthenticationService, DatabaseService, SessionManager, NotificationService)
 - **Controls**: Reusable UI components (GameCard, FilterPanel, AsyncImage, LoadingSpinner, NotificationToast)
-- **Converters**: Value converters for data binding transformations (ImageUrlConverter, NotificationConverters)
+- **Converters**: Value converters for data binding transformations (ImageUrlConverter, ActionColorConverter, ActionIconConverter, TableNameColorConverter, StatusIconConverter, StatusColorConverter, ConnectionStatusConverters, etc.)

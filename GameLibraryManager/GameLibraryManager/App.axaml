@@ -10,6 +10,8 @@
         <converters:BoolToSelectedForegroundConverter x:Key="BoolToSelectedForegroundConverter"/>
         <converters:StatusIconConverter x:Key="StatusIconConverter"/>
         <converters:StatusColorConverter x:Key="StatusColorConverter"/>
+        <converters:BoolToConnectionStatusColorConverter x:Key="BoolToConnectionStatusColorConverter"/>
+        <converters:BoolToConnectionStatusTextConverter x:Key="BoolToConnectionStatusTextConverter"/>
         <converters:ActionColorConverter x:Key="ActionColorConverter"/>
         <converters:ActionIconConverter x:Key="ActionIconConverter"/>
         <converters:TableNameColorConverter x:Key="TableNameColorConverter"/>

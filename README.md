@@ -1,3 +1,5 @@
+> **Archived.** This project is no longer maintained and is kept for reference only.
+
 # Game Library Manager
 
 A cross-platform desktop application for managing personal game collections. This is a university project built with Avalonia UI and .NET 8, allowing users to organize, track, and discover games across multiple platforms.
